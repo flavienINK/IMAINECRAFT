@@ -1,0 +1,35 @@
+#include "imac2gl3/cameras/FreeFlyCamera.hpp"
+
+namespace imac2gl3 {
+
+	void FreeFlyCamera::moveFront(float t){
+		m_fPosition += t * m_FrontVector;
+	}
+
+	void FreeFlyCamera::moveLeft(float t){
+		m_fPosition += t * m_LeftVector;
+	}
+
+	void FreeFlyCamera::rotateLeft(float degrees){
+		m_fPhi += PI * degrees / 180;
+		computeDirectionVectors();
+	}
+
+	void FreeFlyCamera::rotateUp(float degrees){
+		m_fTheta += PI * degrees / 180;
+		computeDirectionVectors();
+	}
+
+	glm::mat4 FreeFlyCamera::getViewMatrix() const{
+		glm::mat4 V = glm::lookAt( m_fPosition, m_fPosition + m_FrontVector, m_UpVector);
+		return V;
+	}
+
+	void FreeFlyCamera::computeDirectionVectors(){
+		m_FrontVector = glm::vec3(cos(m_fTheta) * sin(m_fPhi), sin(m_fTheta), cos(m_fTheta) * cos(m_fPhi));
+		m_LeftVector = glm::vec3(sin(m_fPhi + PI/2), 0, cos(m_fPhi + PI/2));
+		m_UpVector = glm::cross(m_FrontVector, m_LeftVector);
+}
+
+}
+

@@ -1,0 +1,134 @@
+#include <iostream>
+#include <cstdlib>
+
+#include <SDL/SDL.h>
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "imac2gl3/shapes/Cube.hpp"
+#include "imac2gl3/shader_tools.hpp"
+#include "imac2gl3/shapes/GLShapeInstance.hpp"
+#include "imac2gl3/shapes/MatrixStack.hpp"
+
+#include "imac2gl3/cameras/FreeFlyCamera.hpp"
+
+#define POSITION_LOCATION 0
+#define NORMAL_LOCATION 1
+#define TEXCOORDS_LOCATION 2
+
+
+static const size_t WINDOW_WIDTH = 512, WINDOW_HEIGHT = 512;
+static const size_t BYTES_PER_PIXEL = 32;
+
+int main(int argc, char** argv) {
+    /********************************************************************
+     * INITIALISATION DU PROGRAMME
+     ********************************************************************/
+    
+    // Initialisation de la SDL
+    SDL_Init(SDL_INIT_VIDEO);
+    
+    // Creation de la fenêtre et d'un contexte OpenGL
+    SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, BYTES_PER_PIXEL, SDL_OPENGL);
+    
+    // Initialisation de GLEW
+    GLenum error;
+    if(GLEW_OK != (error = glewInit())) {
+        std::cerr << "Impossible d'initialiser GLEW: " << glewGetErrorString(error) << std::endl;
+        return EXIT_FAILURE;
+    }
+    
+    // Creation des ressources OpenGL
+
+   imac2gl3::Cube myCube;
+   imac2gl3::GLShapeInstance cube = imac2gl3::GLShapeInstance(myCube); 
+
+    glm::mat4 P = glm::perspective(70.f, WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 1000.f);
+    
+    imac2gl3::FreeFlyCamera Cam;
+
+    glEnable(GL_DEPTH_TEST);
+
+    GLuint program = imac2gl3::loadProgram("./shaders/transform.vs.glsl",
+    "./shaders/texcoordscolor.fs.glsl");
+    if(!program) {
+        return EXIT_FAILURE;
+    }
+    glUseProgram(program);
+    
+    // Boucle principale
+    bool done = false;
+    while(!done) {
+        // Nettoyage de la fenêtre
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	
+	glm::mat4 V = Cam.getViewMatrix();
+
+	MatrixStack mstack;
+	mstack.mult(P);
+	mstack.mult(V);
+	mstack.translate(glm::vec3(0, 0, -10));
+
+	GLint uMVPMatrix = glGetUniformLocation(program, "uMVPMatrix");
+	glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
+	cube.draw();
+	mstack.push();
+
+        // Mise à jour de l'affichage
+        SDL_GL_SwapBuffers();
+        
+        // Boucle de gestion des évenements
+        SDL_Event e;
+        int mouse_x, mouse_y, old_mouse_x, old_mouse_y;
+        SDL_GetMouseState(&mouse_x, &mouse_y);
+        SDL_GetMouseState(&old_mouse_x, &old_mouse_y);
+        
+        while(SDL_PollEvent(&e)) {
+		
+            // Traitement de l'évenement fermeture de fenêtre
+            if(e.type == SDL_QUIT) {
+                done = true;
+                break;
+            }
+		
+		// Traitement mouvement souris
+		SDL_GetMouseState(&mouse_x, &mouse_y);
+		Cam.rotateLeft( mouse_x - old_mouse_x );
+		Cam.rotateUp( mouse_y - old_mouse_y );
+		old_mouse_x = mouse_x;
+		old_mouse_y = mouse_y;
+
+            // Traitement des autres évenements:
+            
+            switch(e.key.keysym.sym){
+		case SDLK_z:
+			Cam.moveFront(1);
+			break;
+		case SDLK_s:
+			Cam.moveFront(-1);
+			break;
+		case SDLK_q:
+			Cam.moveLeft(1);
+			break;
+		case SDLK_d:
+			Cam.moveLeft(-1);
+			break;
+		default:break;
+		}
+	Cam.afficherCam();
+			
+			
+            
+        }
+    }
+    
+    // Destruction des ressources OpenGL
+    
+ 
+    
+    SDL_Quit();
+    
+    return EXIT_SUCCESS;
+}
