@@ -36,9 +36,9 @@ namespace imac2gl3 {
 		
 
 		/* Chaine de montagnes */
-		for(int i = 1; i<1000; ++i) moutain(randomBalance(8), 15, randomPosition('x'), randomPosition('y'), sol);		
-		for(int j = 1; j<1000; ++j) cavity(15, randomBalance(8), randomPosition('x'), randomPosition('y'), sol);
-		for(int j = 1; j<20; ++j) pyramid(9, 9, randomPosition('x'), randomPosition('y'), sol);
+		for(int i = 1; i<1000; ++i) relief(randomBalance(6), 15, randomPosition('x'), randomPosition('y'), sol);		
+		//for(int j = 1; j<500; ++j) pyramid(15, randomBalance(8), randomPosition('x'), randomPosition('y'), sol);
+		//for(int j = 1; j<20; ++j) pyramid(9, 9, randomPosition('x'), randomPosition('y'), sol);
 		
 		/* Check Cubes */
 		for(int i=0; i<LONGUEUR_TERRRAIN; ++i){
@@ -141,53 +141,7 @@ namespace imac2gl3 {
 		}
 	}
 	
-	void Terrain::landscape(int height, int width, int x, int y, int sol){
-		int idTex = 2;
-		for(int hauteur = 0; hauteur < height; ++hauteur)
-		{
-			for(int i = 1; i<width-hauteur; ++i)
-			{
-				if
-				(
-					x+i < LONGUEUR_TERRRAIN &&
-					x-i > 0 &&
-					y+i < LARGEUR_TERRRAIN &&
-					y-i > 0
-				)
-				{
-					/* pivot montagne */
-					if(terrain(x, y, sol+1+hauteur)==0) terrain(x, y, sol+1+hauteur) = idTex;
-					/* etoile */
-					if(terrain(x+i, y, sol+1+hauteur)==0) terrain(x+i, y, sol+1+hauteur) = idTex;
-					if(terrain(x, y+i, sol+1+hauteur)==0) terrain(x, y+i, sol+1+hauteur) = idTex;
-					if(terrain(x, y-i, sol+1+hauteur)==0) terrain(x, y-i, sol+1+hauteur) = idTex;
-					if(terrain(x-i, y, sol+1+hauteur)==0) terrain(x-i, y, sol+1+hauteur) = idTex;
-					for(int j = 1; j<width-hauteur; j++)
-					{
-						if
-						(
-							x+i < LONGUEUR_TERRRAIN &&
-							x-i > 0 &&
-							y+i < LARGEUR_TERRRAIN &&
-							y-i > 0
-						)
-						{
-							/*zone 1*/
-							if(terrain(x+i, y+j, sol+1+hauteur)==0) terrain(x+i, y+j, sol+1+hauteur) = idTex;
-							/*zone 2*/
-							if(terrain(x+i, y-j, sol+1+hauteur)==0) terrain(x+i, y-j, sol+1+hauteur) = idTex;
-							/*zone 3*/
-							if(terrain(x-i, y+j, sol+1+hauteur)==0) terrain(x-i, y+j, sol+1+hauteur) = idTex;
-							/*zone 4*/
-							if(terrain(x-i, y-j, sol+1+hauteur)==0) terrain(x-i, y-j, sol+1+hauteur) = idTex;
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	void Terrain::moutain(int height, int width, int x, int y, int sol){
+	void Terrain::relief(int height, int width, int x, int y, int sol){
 		int idTex = 2;
 		int aleaX, aleaY;
 		for(int hauteur = 0; hauteur < height; ++hauteur)

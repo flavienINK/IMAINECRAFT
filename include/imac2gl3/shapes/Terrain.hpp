@@ -23,7 +23,7 @@
 #include "imac2gl3/shapes/TerrainData.hpp"
 
 namespace imac2gl3 {
-	class Terrain : public Random {
+	class Terrain{
 		private:
 			Cube1 myCube1;
 			Cube2 myCube2;
@@ -38,9 +38,8 @@ namespace imac2gl3 {
 			void load();
 			void draw(MatrixStack &mstack, glm::vec3 position, int profondeur);
 			
-			void landscape(int height, int width, int x, int y, int sol);
+			void relief(int height, int width, int x, int y, int sol);
 			void pyramid(int height, int width, int x, int y, int sol);
-			void moutain(int height, int width, int x, int y, int sol);
 			void cavity(int height, int width, int x, int y, int z);
 			void water(int length, int width, int x, int y, int sol);
 			
