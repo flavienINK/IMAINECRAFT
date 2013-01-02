@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
      * INITIALISATION DU PROGRAMME
      ********************************************************************/
     
-     // Propagation d'une graine pour le random
+    // Propagation d'une graine pour le random
     srand(time(NULL)); // On prend le nombre de secondes ecoulees depuis le commencement
     
     // Initialisation de la SDL

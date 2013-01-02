@@ -9,6 +9,7 @@
 #include "imac2gl3/shapes/Cube1.hpp"
 #include "imac2gl3/shapes/Cube2.hpp"
 #include "imac2gl3/shapes/MatrixStack.hpp"
+#include "imac2gl3/Random.hpp"
 #include <ctime>
 #include <cstdlib>
 #include <fstream>
@@ -22,13 +23,12 @@
 #include "imac2gl3/shapes/TerrainData.hpp"
 
 namespace imac2gl3 {
-	class Terrain {
+	class Terrain : public Random {
 		private:
 			Cube1 myCube1;
 			Cube2 myCube2;
 			TerrainData terrain;
 			GLuint program;
-			time_t seconds;
 
 		public: 
 			Terrain();
@@ -48,17 +48,11 @@ namespace imac2gl3 {
 			
 			void addBlock(int x, int y, int z);
 			void deleteBlock(int x, int y, int z);
-			
+						
 			bool hasFreeSurface(int i, int j, int k);
 			int getSolCoordonnee(glm::vec3 position);
 			int getNearestCollisionX(glm::vec3 position);
 			int getNearestCollisionY(glm::vec3 position);
-			
-			bool randomBool(int balance);
-			int randomPosition(char vecteur);
-			int randomBalance(int balance);
-			
-			float random(int min, int max);
 	};
 }
 

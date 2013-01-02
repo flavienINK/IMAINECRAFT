@@ -37,7 +37,7 @@ namespace imac2gl3 {
 
 		/* Chaine de montagnes */
 		for(int i = 1; i<1000; ++i) moutain(randomBalance(8), 15, randomPosition('x'), randomPosition('y'), sol);		
-		for(int j = 1; j<500; ++j) cavity(15, randomBalance(8), randomPosition('x'), randomPosition('y'), sol-1);
+		for(int j = 1; j<1000; ++j) cavity(15, randomBalance(8), randomPosition('x'), randomPosition('y'), sol);
 		for(int j = 1; j<20; ++j) pyramid(9, 9, randomPosition('x'), randomPosition('y'), sol);
 		
 		/* Check Cubes */
@@ -583,24 +583,7 @@ namespace imac2gl3 {
 		}
 		
 	}
-	
-	bool Terrain::randomBool(int balance){
-		if (rand()%100 < balance) return true;
-		else return false;
-	}
-	
-	int Terrain::randomPosition(char vecteur){
-		if (vecteur == 'x') return rand()%LARGEUR_TERRRAIN;
-		if (vecteur == 'y') return rand()%LONGUEUR_TERRRAIN;
-		if (vecteur == 'z') return rand()%HAUTEUR_TERRRAIN;
-		return 0;
-	}
-	
-	int Terrain::randomBalance(int balance){
-		if (balance < 0) return 0;
-		return rand()%balance;
-	}
-	
+		
 	void Terrain::save(glm::vec3 vecPos){
 		string nom;
 		cout << "Nom du fichier a enregistrer :" <<endl;
