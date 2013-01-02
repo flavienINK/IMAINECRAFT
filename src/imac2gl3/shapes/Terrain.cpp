@@ -5,7 +5,7 @@ using namespace std;
 namespace imac2gl3 {
 
 	Terrain::Terrain(){
-		// OK
+		
 		// Chargement des shaders
 		program = loadProgram("./shaders/texture.vs.glsl",
 		"./shaders/texture.fs.glsl");
@@ -13,33 +13,44 @@ namespace imac2gl3 {
 			exit(EXIT_FAILURE);
 		}
 		glUseProgram(program);
-		
 		glUniform1i(glGetUniformLocation(program, "uTexture"), 0);
 		
 		//int coucheEpaisseur = glm::floor(0.3*HAUTEUR_TERRRAIN);
-		int sol = 2; // Pour hauteur = 15
+		int sol = 10;
 		
-		
-		//std::cout<<sol<<std::endl;
 		// Construction du terrain entier, tout est rempli et par couche (texture cube)
 		for(int i=0; i<LONGUEUR_TERRRAIN; ++i){
 			for(int j=0; j<LARGEUR_TERRRAIN; ++j){
 				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
-					if(k==0){
-						terrain(i, j, k) = 1;
-					}else if(k==1){
-						terrain(i, j, k) = 1;
-					}else if(k==2){
+					if(k<=sol)
+					{
 						terrain(i, j, k) = 2;
-					}else terrain(i, j, k) = 0;
+					}
+					else
+					{
+						terrain(i, j, k) = 0;
+					}
 				}	
 			}
 		}
 		
-		/* Génération de montagnes */
-		for(int i = 1; i<10000; ++i){
-			moutain(randomBalance(7), 8, randomPosition('x'), randomPosition('y'), sol);
+
+		/* Chaine de montagnes */
+		for(int i = 1; i<1000; ++i) moutain(randomBalance(8), 15, randomPosition('x'), randomPosition('y'), sol);		
+		for(int j = 1; j<500; ++j) cavity(15, randomBalance(8), randomPosition('x'), randomPosition('y'), sol-1);
+		for(int j = 1; j<20; ++j) pyramid(9, 9, randomPosition('x'), randomPosition('y'), sol);
+		
+		/* Check Cubes */
+		for(int i=0; i<LONGUEUR_TERRRAIN; ++i){
+			for(int j=0; j<LARGEUR_TERRRAIN; ++j){
+				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
+					if(k==0) terrain(i, j, k) = 2;
+				}	
+			}
 		}
+		
+		/* Texturing */
+		
 	}
 	
 	void Terrain::afficherTerrain(){
@@ -128,10 +139,9 @@ namespace imac2gl3 {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
-
 	}
 	
-	void Terrain::moutain(int height, int width, int x, int y, int sol){
+	void Terrain::landscape(int height, int width, int x, int y, int sol){
 		int idTex = 2;
 		for(int hauteur = 0; hauteur < height; ++hauteur)
 		{
@@ -145,7 +155,6 @@ namespace imac2gl3 {
 					y-i > 0
 				)
 				{
-					if(hauteur >= 5) idTex = 1;
 					/* pivot montagne */
 					if(terrain(x, y, sol+1+hauteur)==0) terrain(x, y, sol+1+hauteur) = idTex;
 					/* etoile */
@@ -171,6 +180,263 @@ namespace imac2gl3 {
 							if(terrain(x-i, y+j, sol+1+hauteur)==0) terrain(x-i, y+j, sol+1+hauteur) = idTex;
 							/*zone 4*/
 							if(terrain(x-i, y-j, sol+1+hauteur)==0) terrain(x-i, y-j, sol+1+hauteur) = idTex;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	void Terrain::moutain(int height, int width, int x, int y, int sol){
+		int idTex = 2;
+		int aleaX, aleaY;
+		for(int hauteur = 0; hauteur < height; ++hauteur)
+		{
+			if (hauteur == sol)
+			{
+				aleaX = 0;
+				aleaY = 0;
+			}
+			else
+			{
+				aleaX = randomBalance(2);
+				aleaY = randomBalance(2);
+			}
+			
+			for(int i = 1; i<width-hauteur; ++i)
+			{
+				if
+				(
+					x+i+aleaX < LONGUEUR_TERRRAIN &&
+					x-i+aleaX > 0 &&
+					y+i+aleaY < LARGEUR_TERRRAIN &&
+					y-i+aleaY > 0
+				)
+				{
+					/* pivot montagne */
+					if(terrain(x+aleaX, y+aleaY, sol+1+hauteur)==0) terrain(x+aleaX, y+aleaY, sol+1+hauteur) = idTex;
+					/* etoile */
+					if(terrain(x+i+aleaX, y+aleaY, sol+1+hauteur)==0) terrain(x+i+aleaX, y+aleaY, sol+1+hauteur) = idTex;
+					if(terrain(x+aleaX, y+i+aleaY, sol+1+hauteur)==0) terrain(x+aleaX, y+i+aleaY, sol+1+hauteur) = idTex;
+					if(terrain(x+aleaX, y-i+aleaY, sol+1+hauteur)==0) terrain(x+aleaX, y-i+aleaY, sol+1+hauteur) = idTex;
+					if(terrain(x-i+aleaX, y+aleaY, sol+1+hauteur)==0) terrain(x-i+aleaX, y+aleaY, sol+1+hauteur) = idTex;
+					for(int j = 1; j<width-hauteur; j++)
+					{
+						if
+						(
+							x+i+aleaX < LONGUEUR_TERRRAIN &&
+							x-i+aleaX > 0 &&
+							y+i+aleaY < LARGEUR_TERRRAIN &&
+							y-i+aleaY > 0
+						)
+						{
+							/*zone 1*/
+							if(terrain(x+i+aleaX, y+j+aleaY, sol+1+hauteur)==0) terrain(x+i+aleaX, y+j+aleaY, sol+1+hauteur) = idTex;
+							/*zone 2*/
+							if(terrain(x+i+aleaX, y-j+aleaY, sol+1+hauteur)==0) terrain(x+i+aleaX, y-j+aleaY, sol+1+hauteur) = idTex;
+							/*zone 3*/
+							if(terrain(x-i+aleaX, y+j+aleaY, sol+1+hauteur)==0) terrain(x-i+aleaX, y+j+aleaY, sol+1+hauteur) = idTex;
+							/*zone 4*/
+							if(terrain(x-i+aleaX, y-j+aleaY, sol+1+hauteur)==0) terrain(x-i+aleaX, y-j+aleaY, sol+1+hauteur) = idTex;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	void Terrain::water(int length, int width, int x, int y, int sol){
+		int idTex = 1;
+		for(int hauteur = 0; hauteur < length; ++hauteur)
+		{
+			for(int i = 1; i<width-length; ++i)
+			{
+				if
+				(
+					x+i < LONGUEUR_TERRRAIN &&
+					x-i > 0 &&
+					y+i < LARGEUR_TERRRAIN &&
+					y-i > 0
+				)
+				{
+					/* pivot */
+					if(terrain(x, y, sol+1+hauteur)==0) terrain(x, y, sol+1+hauteur) = idTex;
+					/* etoile */
+					if(terrain(x+i, y, sol+1+hauteur)==0) terrain(x+i, y, sol+1+hauteur) = idTex;
+					if(terrain(x, y+i, sol+1+hauteur)==0) terrain(x, y+i, sol+1+hauteur) = idTex;
+					if(terrain(x, y-i, sol+1+hauteur)==0) terrain(x, y-i, sol+1+hauteur) = idTex;
+					if(terrain(x-i, y, sol+1+hauteur)==0) terrain(x-i, y, sol+1+hauteur) = idTex;
+					for(int j = 1; j<width-hauteur; j++)
+					{
+						if
+						(
+							x+i < LONGUEUR_TERRRAIN &&
+							x-i > 0 &&
+							y+i < LARGEUR_TERRRAIN &&
+							y-i > 0
+						)
+						{
+							/*zone 1*/
+							if(terrain(x+i, y+j, sol+1+hauteur)==0) terrain(x+i, y+j, sol+1+hauteur) = idTex;
+							/*zone 2*/
+							if(terrain(x+i, y-j, sol+1+hauteur)==0) terrain(x+i, y-j, sol+1+hauteur) = idTex;
+							/*zone 3*/
+							if(terrain(x-i, y+j, sol+1+hauteur)==0) terrain(x-i, y+j, sol+1+hauteur) = idTex;
+							/*zone 4*/
+							if(terrain(x-i, y-j, sol+1+hauteur)==0) terrain(x-i, y-j, sol+1+hauteur) = idTex;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	void Terrain::pyramid(int height, int width, int x, int y, int sol){
+		blockRemove(10, width+1, x, y, sol);
+		int idTex = 1;
+		for(int hauteur = 0; hauteur < height; ++hauteur)
+		{
+			for(int i = 1; i<width-hauteur; ++i)
+			{
+				if
+				(
+					x+i < LONGUEUR_TERRRAIN &&
+					x-i > 0 &&
+					y+i < LARGEUR_TERRRAIN &&
+					y-i > 0
+				)
+				{
+					/* pivot */
+					terrain(x, y, sol+1+hauteur) = idTex;
+					/* etoile */
+					terrain(x+i, y, sol+1+hauteur) = idTex;
+					terrain(x, y+i, sol+1+hauteur) = idTex;
+					terrain(x, y-i, sol+1+hauteur) = idTex;
+					terrain(x-i, y, sol+1+hauteur) = idTex;
+					for(int j = 1; j<width-hauteur; j++)
+					{
+						if
+						(
+							x+i < LONGUEUR_TERRRAIN &&
+							x-i > 0 &&
+							y+i < LARGEUR_TERRRAIN &&
+							y-i > 0
+						)
+						{
+							/*zone 1*/
+							terrain(x+i, y+j, sol+1+hauteur) = idTex;
+							/*zone 2*/
+							terrain(x+i, y-j, sol+1+hauteur) = idTex;
+							/*zone 3*/
+							terrain(x-i, y+j, sol+1+hauteur) = idTex;
+							/*zone 4*/
+							terrain(x-i, y-j, sol+1+hauteur) = idTex;
+						}
+					}
+				}
+			}
+			
+		}
+	}
+	
+	void Terrain::blockRemove(int height, int width, int x, int y, int sol){
+		int idTex = 0;
+		for(int hauteur = 0; hauteur < height; ++hauteur)
+		{
+			for(int i = 1; i<width; ++i)
+			{
+				if
+				(
+					x+i < LONGUEUR_TERRRAIN &&
+					x-i > 0 &&
+					y+i < LARGEUR_TERRRAIN &&
+					y-i > 0
+				)
+				{
+					/* pivot */
+					terrain(x, y, sol+1+hauteur) = idTex;
+					/* etoile */
+					terrain(x+i, y, sol+1+hauteur) = idTex;
+					terrain(x, y+i, sol+1+hauteur) = idTex;
+					terrain(x, y-i, sol+1+hauteur) = idTex;
+					terrain(x-i, y, sol+1+hauteur) = idTex;
+					for(int j = 1; j<width; j++)
+					{
+						if
+						(
+							x+i < LONGUEUR_TERRRAIN &&
+							x-i > 0 &&
+							y+i < LARGEUR_TERRRAIN &&
+							y-i > 0
+						)
+						{
+							/*zone 1*/
+							terrain(x+i, y+j, sol+1+hauteur) = idTex;
+							/*zone 2*/
+							terrain(x+i, y-j, sol+1+hauteur) = idTex;
+							/*zone 3*/
+							terrain(x-i, y+j, sol+1+hauteur) = idTex;
+							/*zone 4*/
+							terrain(x-i, y-j, sol+1+hauteur) = idTex;
+						}
+					}
+				}
+			}
+			
+		}
+	}
+	
+	void Terrain::cavity(int height, int width, int x, int y, int sol){
+		int idTex = 0;
+		int aleaX, aleaY;
+		for(int hauteur = 0; hauteur < height; ++hauteur)
+		{
+			if (hauteur == sol)
+			{
+				aleaX = 0;
+				aleaY = 0;
+			}
+			else
+			{
+				aleaX = randomBalance(2);
+				aleaY = randomBalance(2);
+			}
+			
+			for(int i = 1; i<width-hauteur; ++i)
+			{
+				if
+				(
+					x+i+aleaX < LONGUEUR_TERRRAIN &&
+					x-i+aleaX  > 0 &&
+					y+i+aleaY < LARGEUR_TERRRAIN &&
+					y-i+aleaY > 0
+				)
+				{
+					/* pivot cavite */
+					if(terrain(x+aleaX, y+aleaY, sol-hauteur)!=0) terrain(x+aleaX ,y+aleaY , sol-hauteur) = idTex;
+					/* etoile */
+					if(terrain(x+i+aleaX, y+aleaY, sol-hauteur)!=0) terrain(x+i+aleaX, y+aleaY, sol-hauteur) = idTex;
+					if(terrain(x+aleaX, y+i+aleaY, sol-hauteur)!=0) terrain(x+aleaX, y+i+aleaY, sol-hauteur) = idTex;
+					if(terrain(x+aleaX, y-i+aleaY, sol-hauteur)!=0) terrain(x+aleaX, y-i+aleaY, sol-hauteur) = idTex;
+					if(terrain(x-i+aleaX, y+aleaY, sol-hauteur)!=0) terrain(x-i+aleaX, y+aleaY, sol-hauteur) = idTex;
+					for(int j = 1; j<width-hauteur; j++)
+					{
+						if
+						(
+							x+i+aleaX < LONGUEUR_TERRRAIN &&
+							x-i+aleaX > 0 &&
+							y+i+aleaY < LARGEUR_TERRRAIN &&
+							y-i+aleaY > 0
+						)
+						{
+							/*zone 1*/
+							if(terrain(x+i+aleaX, y+j+aleaY, sol-hauteur)!=0) terrain(x+i+aleaX, y+j+aleaY, sol-hauteur) = idTex;
+							/*zone 2*/
+							if(terrain(x+i+aleaX, y-j+aleaY, sol-hauteur)!=0) terrain(x+i+aleaX, y-j+aleaY, sol-hauteur) = idTex;
+							/*zone 3*/
+							if(terrain(x-i+aleaX, y+j+aleaY, sol-hauteur)!=0) terrain(x-i+aleaX, y+j+aleaY, sol-hauteur) = idTex;
+							/*zone 4*/
+							if(terrain(x-i+aleaX, y-j+aleaY, sol-hauteur)!=0) terrain(x-i+aleaX, y-j+aleaY, sol-hauteur) = idTex;
 						}
 					}
 				}
@@ -226,28 +492,27 @@ namespace imac2gl3 {
 
 		int pos, neg;
 		int i=glm::ceil(position.x);
-		while(i<std::min((int)position.x+2, LONGUEUR_TERRRAIN) && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
+		while(i<LONGUEUR_TERRRAIN && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
 			i++;
 		}
 		pos=i;
 		
 		i=glm::floor(position.x);
-		while(i>std::max((int)position.x-2, 0) && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
+		while(i>0 && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
 			i--;
 		}
 		neg=i;
 		
-		//Cas spécial bord de cube
 		if( y1 != y ){
 			
 			i=glm::ceil(position.x);
-			while(i<std::min((int)position.x+2, LONGUEUR_TERRRAIN) && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
+			while(i<LONGUEUR_TERRRAIN && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
 				i++;
 			}
 			if( i < pos ) pos = i;
 			
 			i=glm::floor(position.x);
-			while(i>std::max((int)position.x-2, 0) && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
+			while(i>0 && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
 				i--;
 			}
 			if( i > neg ) neg = i;
@@ -279,27 +544,26 @@ namespace imac2gl3 {
 		
 		int pos, neg;
 		int j=glm::ceil(-position.z);
-		while(j<std::min((int)(-position.z)+2, LARGEUR_TERRRAIN) && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
+		while(j<LARGEUR_TERRRAIN && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
 			j++;
 		}
 		pos=j;
 		j=glm::floor(-position.z);
-		while(j> std::max((int)(-position.z)-2, 0) && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
+		while(j>0 && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
 			j--;
 		}
 		neg=j;
 		
-		//Cas special bord cube
 		if( x1 != x ){
 			
 			j=glm::ceil(-position.z);
-			while(j<std::min((int)(-position.z)+2, LARGEUR_TERRRAIN) && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
+			while(j<LONGUEUR_TERRRAIN && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
 				j++;
 			}
 			if( j < pos ) pos = j;
 			
 			j=glm::floor(-position.z);
-			while(j> std::max((int)(-position.z)-2, 0) && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
+			while(j>0 && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
 				j--;
 			}
 			if( j > neg ) neg = j;
@@ -337,14 +601,33 @@ namespace imac2gl3 {
 		return rand()%balance;
 	}
 	
-	void Terrain::save(){
-		ofstream fichier("save/test.txt", ios::out | ios::trunc);
+	void Terrain::save(glm::vec3 vecPos){
+		string nom;
+		cout << "Nom du fichier a enregistrer :" <<endl;
+		cin >> nom;
+		string racine = "save/";
+		string ext = ".xml";
+		string repertoire = racine + nom + ext;
+		cout<<repertoire<<endl;
+		ofstream fichier(repertoire.c_str(), ios::out | ios::trunc);
 		if(fichier)
 		{
 			int longueur = LONGUEUR_TERRRAIN;
 			int largeur = LARGEUR_TERRRAIN;
 			int hauteur = HAUTEUR_TERRRAIN;
-			fichier << longueur << " " << largeur << " " << hauteur << endl;
+			fichier << "<nomJeu>" << endl << "\t" << "Minecraft IMAC" << endl << "</nomJeu>" << endl;
+			fichier << "<nomFichier>" << endl << "\t" << nom << endl << "</nomFichier>" << endl;
+			fichier << "<proprieteTerrain>" << endl;
+			fichier << "\t<longueur>" << endl << "\t\t" << longueur << endl << "\t</longueur>" << endl;
+			fichier << "\t<largeur>" << endl << "\t\t" << largeur << endl << "\t</largeur>" << endl;
+			fichier << "\t<hauteur>" << endl << "\t\t" << hauteur << endl << "\t</hauteur>" << endl;
+			fichier << "</proprieteTerrain>" << endl;
+			fichier << "<positionPersonnage>" << endl;
+			fichier << "\t<x>" << endl << "\t\t" << vecPos.x << endl << "\t</x>" << endl;
+			fichier << "\t<y>" << endl << "\t\t" << vecPos.y << endl << "\t</y>" << endl;
+			fichier << "\t<z>" << endl << "\t\t" << vecPos.z << endl << "\t</z>" << endl;
+			fichier << "</positionPersonnage>" << endl;
+			fichier << "<positionCube>" << endl;
 			for(int i=0; i<LONGUEUR_TERRRAIN; ++i)
 			{
 				for(int j=0; j<LARGEUR_TERRRAIN; ++j)
@@ -352,13 +635,78 @@ namespace imac2gl3 {
 					for(int k=0; k<HAUTEUR_TERRRAIN; ++k)
 					{
 						fichier << terrain(i, j, k);
-						if(k == HAUTEUR_TERRRAIN-1) fichier << std::endl;
+						if(k==HAUTEUR_TERRRAIN-1) fichier << endl;
 					}
 				}
 			}
+			fichier << "</positionCube>";
 			fichier.close();
 		}
-		else cerr << "Impossible d'ouvrir le fichier !" << endl;
+		else cerr << "ERREUR ECRITURE" << endl;
 	}
+	
+	void Terrain::load(){
+		string nom;
+		cout << "Nom du fichier a charger :" <<endl;
+		cin >> nom;
+		
+		vector<string> list;
+		vector<char> listChar;
+		vector<int> positionCube;
+		int debut=0, debutPerso=0, fin=0, finPerso=0;
+		list.clear();
+		string word;
+		
+		string racine = "save/";
+		string ext = ".xml";
+		string repertoire = racine + nom + ext;
+		ifstream fichier(repertoire.c_str());
+		
+		if(fichier)
+		{			
+			while (fichier >> word) {
+			    list.push_back(word);
+			}
+				   
+			fichier.close();
+			
+			// Calcul du debut et fin des positions des cubes
+			for(int i = 0; i<list.size(); i++){
+				if(list.at(i) == "<positionCube>") debut = i+1;
+				if(list.at(i) == "</positionCube>") fin = i;
+				
+				if(list.at(i) == "<positionPersonnage>") debutPerso = i+1;
+				if(list.at(i) == "</positionPersonnage>") finPerso = i;
+			}
 
+			// Converti listes de string en liste de char
+			for(int j = debut; j<fin; ++j)
+			{
+				const char *c = list.at(j).c_str();
+				for(int k=0; k<HAUTEUR_TERRRAIN; ++k)
+				{
+					listChar.push_back(c[k]);
+				}
+			}
+						
+			// Converti char en int
+			for(int j = 0; j<listChar.size(); ++j)
+			{
+				positionCube.push_back(static_cast<int>(listChar.at(j))-48);
+			}
+			
+			// Mise a jour terrain
+			for(int i=0; i<LONGUEUR_TERRRAIN; ++i)
+			{
+				for(int j=0; j<LARGEUR_TERRRAIN; ++j)
+				{
+					for(int k=0; k<HAUTEUR_TERRRAIN; ++k)
+					{
+						terrain(i, j, k) = positionCube[(i*( LARGEUR_TERRRAIN * HAUTEUR_TERRRAIN ) + j*HAUTEUR_TERRRAIN + k)];
+					}
+				}
+			}
+			
+		}else cerr << "ERREUR OUVERTURE FICHIER" << endl;		
+	}
 }

@@ -12,9 +12,14 @@
 #include <ctime>
 #include <cstdlib>
 #include <fstream>
+#include <string>
+#include <algorithm>
+#include <vector>
+#include <iterator>
+#include <sstream>
+
 #include "imac2gl3/settings.hpp"
 #include "imac2gl3/shapes/TerrainData.hpp"
-
 
 namespace imac2gl3 {
 	class Terrain {
@@ -29,10 +34,18 @@ namespace imac2gl3 {
 			Terrain();
 			
 			void afficherTerrain();
-			void save();
+			void save(glm::vec3);
+			void load();
 			void draw(MatrixStack &mstack, glm::vec3 position, int profondeur);
 			
+			void landscape(int height, int width, int x, int y, int sol);
+			void pyramid(int height, int width, int x, int y, int sol);
 			void moutain(int height, int width, int x, int y, int sol);
+			void cavity(int height, int width, int x, int y, int z);
+			void water(int length, int width, int x, int y, int sol);
+			
+			void blockRemove(int height, int width, int x, int y, int sol);
+			
 			void addBlock(int x, int y, int z);
 			void deleteBlock(int x, int y, int z);
 			

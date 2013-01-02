@@ -10,16 +10,12 @@
 #include <ctime>
 #include "imac2gl3/settings.hpp"
 
-
 #include "imac2gl3/shapes/Terrain.hpp"
-
 #include "imac2gl3/shader_tools.hpp"
 #include "imac2gl3/frameClocker.hpp"
 #include "imac2gl3/shapes/GLShapeInstance.hpp"
 #include "imac2gl3/shapes/MatrixStack.hpp"
-
 #include "imac2gl3/cameras/FreeFlyCamera.hpp"
-
 
 int main(int argc, char** argv) {
     /********************************************************************
@@ -126,10 +122,13 @@ int main(int argc, char** argv) {
 				switch(e.key.keysym.sym)
 				{
 					case SDLK_a:
-					terrain.save();
+					terrain.save(Cam.getPosition());
 					std::cout<<"Terrain saved"<<std::endl;
+    					break;
+					case SDLK_l:
+					terrain.load();
+					std::cout<<"Terrain loaded"<<std::endl;
 					break;
-					
 					default: break;
 				}
 			
