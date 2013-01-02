@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
     glm::mat4 P = glm::perspective(70.f, WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 1000.f);
     
     // Creation de la Camera
-    glm::vec3 startPosition((LARGEUR_TERRRAIN)/2, HAUTEUR_TERRRAIN-1 , -(LONGUEUR_TERRRAIN)/2);
+    glm::vec3 startPosition((LARGEUR_TERRRAIN)/2.1, HAUTEUR_TERRRAIN-2 , -(LONGUEUR_TERRRAIN)/2.1);
     imac2gl3::FreeFlyCamera Cam(startPosition, &terrain);
 
     glEnable(GL_DEPTH_TEST);
@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
 		mstack.mult(V);
 
 		//Dessin du terrain
-		terrain.draw(mstack);
+		terrain.draw(mstack, Cam.getPosition(), 50);
         
         //Evenements souris
         SDL_Event e;
@@ -109,14 +109,30 @@ int main(int argc, char** argv) {
             case SDL_QUIT :
                 done = true;
                 break;
-	    case SDL_KEYDOWN :
-		switch(e.key.keysym.sym)
-		{
-		    case SDLK_a:
-			terrain.save();
-			std::cout<<"Terrain saved"<<std::endl;
-		    break;
-		}
+                
+            case SDL_MOUSEBUTTONDOWN:
+				switch(e.button.button){
+					case SDL_BUTTON_LEFT:
+						Cam.breakBlock();
+						break;
+					case SDL_BUTTON_RIGHT:
+						Cam.createBlock();
+						break;
+					
+					default: break;
+				}
+            
+			case SDL_KEYDOWN :
+				switch(e.key.keysym.sym)
+				{
+					case SDLK_a:
+					terrain.save();
+					std::cout<<"Terrain saved"<<std::endl;
+					break;
+					
+					default: break;
+				}
+			
 	    }
         }
         

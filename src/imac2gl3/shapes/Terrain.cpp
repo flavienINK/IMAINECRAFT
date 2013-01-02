@@ -26,18 +26,18 @@ namespace imac2gl3 {
 			for(int j=0; j<LARGEUR_TERRRAIN; ++j){
 				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
 					if(k==0){
-						terrain[i][j][k] = 1;
+						terrain(i, j, k) = 1;
 					}else if(k==1){
-						terrain[i][j][k] = 1;
+						terrain(i, j, k) = 1;
 					}else if(k==2){
-						terrain[i][j][k] = 2;
-					}else terrain[i][j][k] = 0;
+						terrain(i, j, k) = 2;
+					}else terrain(i, j, k) = 0;
 				}	
 			}
 		}
 		
 		/* Génération de montagnes */
-		for(int i = 1; i<40; ++i){
+		for(int i = 1; i<10000; ++i){
 			moutain(randomBalance(7), 8, randomPosition('x'), randomPosition('y'), sol);
 		}
 	}
@@ -47,12 +47,12 @@ namespace imac2gl3 {
 		for(int j=0; j<LARGEUR_TERRRAIN; ++j)
 			for(int k=0; k<HAUTEUR_TERRRAIN; ++k)
 			{
-				std::cout<<terrain[i][j][k];
+				std::cout<<terrain(i, j, k);
 				if(k == 9) std::cout<<std::endl;
 			}
 	}
 	
-	void Terrain::draw(MatrixStack &mstack){
+	void Terrain::draw(MatrixStack &mstack, glm::vec3 position, int profondeur){
 		
 		//Compensation taille du cube
 		mstack.translate(glm::vec3(0.5, -0.5, -0.5));
@@ -62,6 +62,13 @@ namespace imac2gl3 {
 		
 		GLint uMVPMatrix = glGetUniformLocation(program, "uMVPMatrix");
 		
+		//Definition des bornes du dessin
+		int imax = std::min( (int)position.x + profondeur, LONGUEUR_TERRRAIN-1 );
+		int imin = std::max( (int)position.x - profondeur, 0 );
+		int jmax = std::min( (int)(-position.z) + profondeur, LARGEUR_TERRRAIN-1 );
+		int jmin = std::max( (int)(-position.z) - profondeur, 0 );
+		int kmax = std::min( (int)position.y + profondeur, HAUTEUR_TERRRAIN-1 );
+		int kmin = std::max( (int)position.y - profondeur, 0 );
 		
 		{
 			//Boucle concernant le cube1
@@ -70,21 +77,21 @@ namespace imac2gl3 {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, cube.getTexture());
 			
-				for(int i=0; i<LONGUEUR_TERRRAIN; ++i) 
-					for(int j=0; j<LARGEUR_TERRRAIN; ++j)
-						for(int k=0; k<HAUTEUR_TERRRAIN; ++k)
+				for(int i=imin; i<imax; ++i) 
+					for(int j=jmin; j<jmax; ++j)
+						for(int k=kmin; k<kmax; ++k)
 						{
-							if(terrain[i][j][k] == 1){
-								mstack.push();
-								mstack.translate(glm::vec3(i, k, -j));
-								
-								//Transmission de la matrice MVP au vertex shader
-								glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
-								
-								cube.draw();
-								
-								mstack.pop();
-							}
+							if(terrain(i, j, k) == 1 && hasFreeSurface(i, j, k)){
+									mstack.push();
+									mstack.translate(glm::vec3(i, k, -j));
+									
+									//Transmission de la matrice MVP au vertex shader
+									glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
+									
+									cube.draw();
+									
+									mstack.pop();
+								}
 						}
 		
 					
@@ -100,11 +107,11 @@ namespace imac2gl3 {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, cube.getTexture());
 		
-				for(int i=0; i<LONGUEUR_TERRRAIN; ++i) 
-					for(int j=0; j<LARGEUR_TERRRAIN; ++j)
-						for(int k=0; k<HAUTEUR_TERRRAIN; ++k)
+				for(int i=imin; i<imax; ++i) 
+					for(int j=jmin; j<jmax; ++j)
+						for(int k=kmin; k<kmax; ++k)
 						{
-							if(terrain[i][j][k] == 2){
+							if(terrain(i, j, k) == 2 && hasFreeSurface(i, j, k)){
 								mstack.push();
 								mstack.translate(glm::vec3(i, k, -j));
 								
@@ -132,51 +139,68 @@ namespace imac2gl3 {
 			{
 				if
 				(
-					x+i < LARGEUR_TERRRAIN &&
 					x+i < LONGUEUR_TERRRAIN &&
-					x-i < LARGEUR_TERRRAIN &&
-					x-i < LONGUEUR_TERRRAIN &&
+					x-i > 0 &&
 					y+i < LARGEUR_TERRRAIN &&
-					y+i < LONGUEUR_TERRRAIN &&
-					y-i < LARGEUR_TERRRAIN &&
-					y-i < LONGUEUR_TERRRAIN
+					y-i > 0
 				)
 				{
 					if(hauteur >= 5) idTex = 1;
 					/* pivot montagne */
-					if(terrain[x][y][sol+1+hauteur]==0) terrain[x][y][sol+1+hauteur] = idTex;
+					if(terrain(x, y, sol+1+hauteur)==0) terrain(x, y, sol+1+hauteur) = idTex;
 					/* etoile */
-					if(terrain[x+i][y][sol+1+hauteur]==0) terrain[x+i][y][sol+1+hauteur] = idTex;
-					if(terrain[x][y+i][sol+1+hauteur]==0) terrain[x][y+i][sol+1+hauteur] = idTex;
-					if(terrain[x][y-i][sol+1+hauteur]==0) terrain[x][y-i][sol+1+hauteur] = idTex;
-					if(terrain[x-i][y][sol+1+hauteur]==0) terrain[x-i][y][sol+1+hauteur] = idTex;
+					if(terrain(x+i, y, sol+1+hauteur)==0) terrain(x+i, y, sol+1+hauteur) = idTex;
+					if(terrain(x, y+i, sol+1+hauteur)==0) terrain(x, y+i, sol+1+hauteur) = idTex;
+					if(terrain(x, y-i, sol+1+hauteur)==0) terrain(x, y-i, sol+1+hauteur) = idTex;
+					if(terrain(x-i, y, sol+1+hauteur)==0) terrain(x-i, y, sol+1+hauteur) = idTex;
 					for(int j = 1; j<width-hauteur; j++)
 					{
 						if
 						(
-							x+i < LARGEUR_TERRRAIN &&
 							x+i < LONGUEUR_TERRRAIN &&
-							x-i < LARGEUR_TERRRAIN &&
-							x-i < LONGUEUR_TERRRAIN &&
+							x-i > 0 &&
 							y+i < LARGEUR_TERRRAIN &&
-							y+i < LONGUEUR_TERRRAIN &&
-							y-i < LARGEUR_TERRRAIN &&
-							y-i < LONGUEUR_TERRRAIN
+							y-i > 0
 						)
 						{
 							/*zone 1*/
-							if(terrain[x+i][y+j][sol+1+hauteur]==0) terrain[x+i][y+j][sol+1+hauteur] = idTex;
+							if(terrain(x+i, y+j, sol+1+hauteur)==0) terrain(x+i, y+j, sol+1+hauteur) = idTex;
 							/*zone 2*/
-							if(terrain[x+i][y-j][sol+1+hauteur]==0) terrain[x+i][y-j][sol+1+hauteur] = idTex;
+							if(terrain(x+i, y-j, sol+1+hauteur)==0) terrain(x+i, y-j, sol+1+hauteur) = idTex;
 							/*zone 3*/
-							if(terrain[x-i][y+j][sol+1+hauteur]==0) terrain[x-i][y+j][sol+1+hauteur] = idTex;
+							if(terrain(x-i, y+j, sol+1+hauteur)==0) terrain(x-i, y+j, sol+1+hauteur) = idTex;
 							/*zone 4*/
-							if(terrain[x-i][y-j][sol+1+hauteur]==0) terrain[x-i][y-j][sol+1+hauteur] = idTex;
+							if(terrain(x-i, y-j, sol+1+hauteur)==0) terrain(x-i, y-j, sol+1+hauteur) = idTex;
 						}
 					}
 				}
 			}
 		}
+	}
+	
+	void Terrain::addBlock(int x, int y, int z){
+		
+	}
+	void Terrain::deleteBlock(int x, int y, int z){
+		
+	}
+	
+	bool Terrain::hasFreeSurface(int i, int j, int k){
+		int imax = std::min(i+1, LONGUEUR_TERRRAIN-1);
+		int imin = std::max(i-1, 0);
+		int jmax = std::min(j+1, LARGEUR_TERRRAIN-1);
+		int jmin = std::max(j-1, 0);
+		int kmax = std::min(k+1, HAUTEUR_TERRRAIN-1);
+		int kmin = std::max(k-1, 0);
+		
+			if(
+				terrain(imax, j, k) == 0 || 
+				terrain(imin, j, k) == 0 ||
+				terrain(i, jmax, k) == 0 ||
+				terrain(i, jmin, k) == 0 ||
+				terrain(i, j, kmax) == 0 ||
+				terrain(i, j, kmin) == 0 ) return true;
+			else return false;
 	}
 	
 	//Donne la coordonnée du sol en fonction de la position
@@ -185,7 +209,7 @@ namespace imac2gl3 {
 		int X = cubePosition.x;
 		int Z = cubePosition.z;
 		int k = cubePosition.y+1;
-		while ( terrain[X][Z][k] == 0 && k > 0){
+		while ( terrain(X, Z, k) == 0 && k > 0){
 			k--;
 		}
 		return k;
@@ -202,27 +226,28 @@ namespace imac2gl3 {
 
 		int pos, neg;
 		int i=glm::ceil(position.x);
-		while(i<LONGUEUR_TERRRAIN && terrain[i][y][z] == 0 && terrain[i][y][z+1] == 0){
+		while(i<std::min((int)position.x+2, LONGUEUR_TERRRAIN) && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
 			i++;
 		}
 		pos=i;
 		
 		i=glm::floor(position.x);
-		while(i>0 && terrain[i][y][z] == 0 && terrain[i][y][z+1] == 0){
+		while(i>std::max((int)position.x-2, 0) && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
 			i--;
 		}
 		neg=i;
 		
+		//Cas spécial bord de cube
 		if( y1 != y ){
 			
 			i=glm::ceil(position.x);
-			while(y1<LONGUEUR_TERRRAIN && terrain[i][y1][z] == 0 && terrain[i][y1][z+1] == 0){
+			while(i<std::min((int)position.x+2, LONGUEUR_TERRRAIN) && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
 				i++;
 			}
 			if( i < pos ) pos = i;
 			
 			i=glm::floor(position.x);
-			while(i>0 && terrain[i][y1][z] == 0 && terrain[i][y1][z+1] == 0){
+			while(i>std::max((int)position.x-2, 0) && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
 				i--;
 			}
 			if( i > neg ) neg = i;
@@ -232,13 +257,13 @@ namespace imac2gl3 {
 		//Cas special bord map
 		if( position.x<2 ){
 			if(glm::abs(position.x-(float)pos) < glm::abs(position.x-(float)(neg))) return pos;
-			else if( terrain[0][y][z] == 0 && terrain[0][y1][z] == 0 ) return neg;
+			else if( terrain(0, y, z) == 0 && terrain(0, y1, z) == 0 ) return neg;
 			else return neg+1;
 		}
 		//Cas general
 		else {
-			if(glm::abs(position.x-(float)pos) < glm::abs(position.x-(float)(neg+1))) {std::cout<<"pos : "<<pos<<std::endl;return pos; }
-			else {std::cout<<"neg : "<<neg+1<<std::endl;return neg + 1;}
+			if(glm::abs(position.x-(float)pos) < glm::abs(position.x-(float)(neg+1))) return pos;
+			else return neg + 1;
 		}
 
 	}
@@ -254,26 +279,27 @@ namespace imac2gl3 {
 		
 		int pos, neg;
 		int j=glm::ceil(-position.z);
-		while(j<LARGEUR_TERRRAIN && terrain[x][j][z] == 0 && terrain[x][j][z+1] == 0){
+		while(j<std::min((int)(-position.z)+2, LARGEUR_TERRRAIN) && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
 			j++;
 		}
 		pos=j;
 		j=glm::floor(-position.z);
-		while(j>0 && terrain[x][j][z] == 0 && terrain[x][j][z+1] == 0){
+		while(j> std::max((int)(-position.z)-2, 0) && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
 			j--;
 		}
 		neg=j;
 		
+		//Cas special bord cube
 		if( x1 != x ){
 			
 			j=glm::ceil(-position.z);
-			while(j<LONGUEUR_TERRRAIN && terrain[x1][j][z] == 0 && terrain[x1][j][z+1] == 0){
+			while(j<std::min((int)(-position.z)+2, LARGEUR_TERRRAIN) && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
 				j++;
 			}
 			if( j < pos ) pos = j;
 			
 			j=glm::floor(-position.z);
-			while(j>0 && terrain[x1][j][z] == 0 && terrain[x1][j][z+1] == 0){
+			while(j> std::max((int)(-position.z)-2, 0) && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
 				j--;
 			}
 			if( j > neg ) neg = j;
@@ -283,7 +309,7 @@ namespace imac2gl3 {
 		//Cas special bord map
 		if( -position.z<2 ){
 			if(glm::abs((-position.z)-(float)pos) < glm::abs((-position.z)-(float)(neg))) return pos;
-			else if( terrain[x][0][z] == 0 && terrain[x1][0][z] == 0 ) return neg;
+			else if( terrain(x, 0, z) == 0 && terrain(x1, 0, z) == 0 ) return neg;
 			else return neg+1;
 		}
 		//Cas general
@@ -325,7 +351,7 @@ namespace imac2gl3 {
 				{
 					for(int k=0; k<HAUTEUR_TERRRAIN; ++k)
 					{
-						fichier << terrain[i][j][k];
+						fichier << terrain(i, j, k);
 						if(k == HAUTEUR_TERRRAIN-1) fichier << std::endl;
 					}
 				}

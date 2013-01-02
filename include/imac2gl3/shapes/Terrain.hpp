@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <fstream>
 #include "imac2gl3/settings.hpp"
+#include "imac2gl3/shapes/TerrainData.hpp"
 
 
 namespace imac2gl3 {
@@ -20,7 +21,7 @@ namespace imac2gl3 {
 		private:
 			Cube1 myCube1;
 			Cube2 myCube2;
-			int terrain[LONGUEUR_TERRRAIN][LARGEUR_TERRRAIN][HAUTEUR_TERRRAIN];
+			TerrainData terrain;
 			GLuint program;
 			time_t seconds;
 
@@ -29,10 +30,13 @@ namespace imac2gl3 {
 			
 			void afficherTerrain();
 			void save();
-			void draw(MatrixStack &mstack);
+			void draw(MatrixStack &mstack, glm::vec3 position, int profondeur);
 			
 			void moutain(int height, int width, int x, int y, int sol);
+			void addBlock(int x, int y, int z);
+			void deleteBlock(int x, int y, int z);
 			
+			bool hasFreeSurface(int i, int j, int k);
 			int getSolCoordonnee(glm::vec3 position);
 			int getNearestCollisionX(glm::vec3 position);
 			int getNearestCollisionY(glm::vec3 position);

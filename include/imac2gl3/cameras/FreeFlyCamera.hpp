@@ -25,11 +25,10 @@ namespace imac2gl3 {
 			glm::vec3 m_UpVector;
 			
 			Terrain *terrain;
-			bool contactSol;
 			Jump  m_jump;
 
 		public: 
-			FreeFlyCamera(const glm::vec3 &startPosition, Terrain *_terrain):m_fPosition(startPosition), m_fPhi(PI), m_fTheta(-PI/2), terrain(_terrain) { m_jump.active = false; contactSol = false; computeDirectionVectors(); };
+			FreeFlyCamera(const glm::vec3 &startPosition, Terrain *_terrain):m_fPosition(startPosition), m_fPhi(PI), m_fTheta(-PI/2), terrain(_terrain) { m_jump.active = false; computeDirectionVectors(); };
 			
 			void moveFront(float t);
 			void moveLeft(float t);
@@ -40,11 +39,15 @@ namespace imac2gl3 {
 			void rotateUp(float degrees);
 			
 			glm::mat4 getViewMatrix();
+			glm::vec3 getPosition();
 			void computeDirectionVectors();
 			
 			void limiteTerrain();
 			void detectionSol();
 			void detectionCollision();
+			
+			void breakBlock();
+			void createBlock();
 			
 			void afficherCam(){std::cout<<"position : x :"<<m_fPosition.x<<" y : "<<m_fPosition.y<<" z : "<<m_fPosition.z<<std::endl<<"frontVector : ("<<m_FrontVector.x<<", "<<m_FrontVector.y<<", "<<m_FrontVector.z<<")"<<std::endl<<"upVector : ("<<m_UpVector.x<<", "<<m_UpVector.y<<", "<<m_UpVector.z<<")"<<std::endl<<"(Teta, phi) : ("<<m_fTheta<<", "<<m_fPhi<<")"<<std::endl;};
 			
