@@ -5,7 +5,7 @@ using namespace std;
 namespace imac2gl3 {
 
 	Terrain::Terrain(){
-		
+		// OK
 		// Chargement des shaders
 		program = loadProgram("./shaders/texture.vs.glsl",
 		"./shaders/texture.fs.glsl");
