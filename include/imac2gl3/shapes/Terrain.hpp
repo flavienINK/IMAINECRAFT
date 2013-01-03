@@ -10,6 +10,7 @@
 #include "imac2gl3/shapes/Cube2.hpp"
 #include "imac2gl3/shapes/MatrixStack.hpp"
 #include "imac2gl3/Random.hpp"
+#include "imac2gl3/FileOpener.hpp"
 #include <ctime>
 #include <cstdlib>
 #include <fstream>

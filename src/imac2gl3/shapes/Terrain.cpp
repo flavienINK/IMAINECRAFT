@@ -579,7 +579,9 @@ namespace imac2gl3 {
 		string racine = "save/";
 		string ext = ".xml";
 		string repertoire = racine + nom + ext;
-		ifstream fichier(repertoire.c_str());
+		
+		ifstream fichier;
+		FileOpener opener(fichier, repertoire.c_str());
 		
 		if(fichier)
 		{
@@ -628,7 +630,9 @@ namespace imac2gl3 {
 		string racine = "save/";
 		string ext = ".xml";
 		string repertoire = racine + nom + ext;
-		ifstream fichier(repertoire.c_str());
+		
+		ifstream fichier;
+		FileOpener opener(fichier, repertoire.c_str());
 		
 		if(fichier)
 		{			
