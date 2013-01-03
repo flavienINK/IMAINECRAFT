@@ -18,7 +18,7 @@ class Cube1: public Cube {
 	public:
 		
 		Cube1(){
-			SDL_Surface* tex1 = IMG_Load("img/logo_imac.png");
+			SDL_Surface* tex1 = IMG_Load("img/template.png");
 		
 			glGenTextures(1, &texture);
 			
