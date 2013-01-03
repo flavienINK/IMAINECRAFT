@@ -8,7 +8,7 @@
 	
 	#define LONGUEUR_TERRRAIN 500
 	#define LARGEUR_TERRRAIN 500
-	#define HAUTEUR_TERRRAIN 20
+	#define HAUTEUR_TERRRAIN 30
 	
 	const double PI = atan(1.0)*4;
 

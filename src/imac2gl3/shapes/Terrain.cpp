@@ -36,20 +36,8 @@ namespace imac2gl3 {
 		
 
 		/* Chaine de montagnes */
-		for(int i = 1; i<1000; ++i) relief(randomBalance(6), 15, randomPosition('x'), randomPosition('y'), sol);		
-		//for(int j = 1; j<500; ++j) pyramid(15, randomBalance(8), randomPosition('x'), randomPosition('y'), sol);
-		//for(int j = 1; j<20; ++j) pyramid(9, 9, randomPosition('x'), randomPosition('y'), sol);
-		
-		/* Check Cubes */
-		for(int i=0; i<LONGUEUR_TERRRAIN; ++i){
-			for(int j=0; j<LARGEUR_TERRRAIN; ++j){
-				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
-					if(k==0) terrain(i, j, k) = 2;
-				}	
-			}
-		}
-		
-		/* Texturing */
+		for(int i = 1; i<5000; ++i) relief(randomBalance(10), 15, randomPosition('x'), randomPosition('y'), sol);
+		for(int i = 1; i<50; ++i) blockRemove(10, 12, randomPosition('x'), randomPosition('y'), sol+5);
 		
 	}
 	
@@ -562,7 +550,7 @@ namespace imac2gl3 {
 			fichier << "<positionPersonnage>" << endl;
 			fichier << "\t<x>" << endl << "\t\t" << vecPos.x << endl << "\t</x>" << endl;
 			fichier << "\t<y>" << endl << "\t\t" << vecPos.y << endl << "\t</y>" << endl;
-			fichier << "\t<z>" << endl << "\t\t" << vecPos.z << endl << "\t</z>" << endl;
+			fichier << "\t<z>" << endl << "\t\t" << vecPos.z  << endl << "\t</z>" << endl;
 			fichier << "</positionPersonnage>" << endl;
 			fichier << "<positionCube>" << endl;
 			for(int i=0; i<LONGUEUR_TERRRAIN; ++i)
@@ -582,15 +570,58 @@ namespace imac2gl3 {
 		else cerr << "ERREUR ECRITURE" << endl;
 	}
 	
-	void Terrain::load(){
-		string nom;
-		cout << "Nom du fichier a charger :" <<endl;
-		cin >> nom;
+	float Terrain::loadPositionCam(string nom, char position3D){
+		vector<string> list;
+		int debut=0, fin=0;
+		list.clear();
+		string word;
+		float position = -1;
+		string racine = "save/";
+		string ext = ".xml";
+		string repertoire = racine + nom + ext;
+		ifstream fichier(repertoire.c_str());
 		
+		if(fichier)
+		{
+			while (fichier >> word) {
+			    list.push_back(word);
+			}	   
+			fichier.close();
+			
+			if(position3D=='y')
+			{
+				for(int i = 0; i<list.size(); i++){
+					if(list.at(i) == "<y>") debut = i+1;
+					if(list.at(i) == "</y>") fin = i;
+				}
+				position = atof(list.at(debut).c_str());
+			}
+			if(position3D=='x')
+			{
+				for(int i = 0; i<list.size(); i++){
+					if(list.at(i) == "<x>") debut = i+1;
+					if(list.at(i) == "</x>") fin = i;
+				}
+				position = atof(list.at(debut).c_str());
+			}
+			if(position3D=='z')
+			{
+				for(int i = 0; i<list.size(); i++){
+					if(list.at(i) == "<z>") debut = i+1;
+					if(list.at(i) == "</z>") fin = i;
+				}
+				position = atof(list.at(debut).c_str());
+			}
+			return position;
+		}else cerr << "ERREUR OUVERTURE FICHIER" << endl;
+		
+	}
+	
+	void Terrain::load(string nom){
 		vector<string> list;
 		vector<char> listChar;
 		vector<int> positionCube;
-		int debut=0, debutPerso=0, fin=0, finPerso=0;
+		int debut=0, fin=0;
 		list.clear();
 		string word;
 		
@@ -611,9 +642,6 @@ namespace imac2gl3 {
 			for(int i = 0; i<list.size(); i++){
 				if(list.at(i) == "<positionCube>") debut = i+1;
 				if(list.at(i) == "</positionCube>") fin = i;
-				
-				if(list.at(i) == "<positionPersonnage>") debutPerso = i+1;
-				if(list.at(i) == "</positionPersonnage>") finPerso = i;
 			}
 
 			// Converti listes de string en liste de char

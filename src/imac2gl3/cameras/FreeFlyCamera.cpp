@@ -87,11 +87,22 @@ namespace imac2gl3 {
 	void FreeFlyCamera::breakBlock(){
 		std::cout<<"Break Block"<<std::endl;
 		
-	}
-	
+	}	
 	
 	void FreeFlyCamera::createBlock(){
 		std::cout<<"Create Block"<<std::endl;
+	}
+	
+	void FreeFlyCamera::setPositionX(int positionX){
+		m_fPosition.x = positionX;
+	}
+	
+	void FreeFlyCamera::setPositionY(int positionY){
+		m_fPosition.y = positionY;
+	}
+	
+	void FreeFlyCamera::setPositionZ(int positionZ){
+		m_fPosition.z = positionZ;
 	}
 }
 

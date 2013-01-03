@@ -35,7 +35,8 @@ namespace imac2gl3 {
 			
 			void afficherTerrain();
 			void save(glm::vec3);
-			void load();
+			void load(std::string nom);
+			float loadPositionCam(std::string nom, char position3D);
 			void draw(MatrixStack &mstack, glm::vec3 position, int profondeur);
 			
 			void relief(int height, int width, int x, int y, int sol);
