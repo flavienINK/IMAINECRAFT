@@ -8,6 +8,12 @@
 #include "imac2gl3/shapes/GLShapeInstance.hpp"
 #include "imac2gl3/shapes/Cube1.hpp"
 #include "imac2gl3/shapes/Cube2.hpp"
+#include "imac2gl3/shapes/CubeHerbe.hpp"
+#include "imac2gl3/shapes/CubeTerre.hpp"
+#include "imac2gl3/shapes/CubeEau.hpp"
+#include "imac2gl3/shapes/CubeNeige.hpp"
+#include "imac2gl3/shapes/CubeBois.hpp"
+#include "imac2gl3/shapes/CubeRoche.hpp"
 #include "imac2gl3/shapes/MatrixStack.hpp"
 #include "imac2gl3/Random.hpp"
 #include "imac2gl3/FileOpener.hpp"
@@ -26,8 +32,8 @@
 namespace imac2gl3 {
 	class Terrain{
 		private:
-			Cube1 myCube1;
-			Cube2 myCube2;
+			CubeTerre myCube1;
+			CubeHerbe myCube2;
 			TerrainData terrain;
 			GLuint program;
 
