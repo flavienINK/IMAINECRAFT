@@ -22,6 +22,8 @@ int main(int argc, char** argv) {
      * INITIALISATION DU PROGRAMME
      ********************************************************************/
     
+    std::string nom;
+    
     // Propagation d'une graine pour le random
     srand(time(NULL)); // On prend le nombre de secondes ecoulees depuis le commencement
     
@@ -126,8 +128,16 @@ int main(int argc, char** argv) {
 					std::cout<<"Terrain saved"<<std::endl;
     					break;
 					case SDLK_l:
-					terrain.load();
+					std::cout << "Nom du fichier a charger :" <<std::endl;
+					std::cin >> nom;
+					terrain.load(nom);
+					
 					std::cout<<"Terrain loaded"<<std::endl;
+					Cam.setPositionY(terrain.loadPositionCam(nom, 'y')+1); //Hauteur (positive)
+					Cam.setPositionX(terrain.loadPositionCam(nom, 'x'));
+					Cam.setPositionZ(terrain.loadPositionCam(nom, 'z'));
+					std::cout<<"Camera loaded"<<std::endl;
+					
 					break;
 					default: break;
 				}

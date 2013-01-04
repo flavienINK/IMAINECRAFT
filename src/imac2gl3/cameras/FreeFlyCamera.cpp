@@ -97,8 +97,7 @@ namespace imac2gl3 {
 		//Destruction bloc inferieur
 		if( m_fTheta < -(85*PI/180) ) terrain->deleteBlock( x + m_FrontVector.x, y + 1 + m_FrontVector.y, z + m_FrontVector.z);
 		
-	}
-	
+	}	
 	
 	void FreeFlyCamera::createBlock(){
 		int x, y, z;
@@ -109,6 +108,18 @@ namespace imac2gl3 {
 		//Ajout bloc en evitant dajouter sur le personnage
 		if( x != (int)m_fPosition.x || z != (int)m_fPosition.z || y != (int)m_fPosition.y+1 ) terrain->addBlock(x, y+1, z);
 		std::cout<<"Create Block"<<std::endl;
+	}
+	
+	void FreeFlyCamera::setPositionX(int positionX){
+		m_fPosition.x = positionX;
+	}
+	
+	void FreeFlyCamera::setPositionY(int positionY){
+		m_fPosition.y = positionY;
+	}
+	
+	void FreeFlyCamera::setPositionZ(int positionZ){
+		m_fPosition.z = positionZ;
 	}
 }
 

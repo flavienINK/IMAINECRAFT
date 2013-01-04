@@ -42,6 +42,10 @@ namespace imac2gl3 {
 			glm::vec3 getPosition();
 			void computeDirectionVectors();
 			
+			void setPositionX(int positionX);
+			void setPositionY(int positionY);
+			void setPositionZ(int positionZ);
+			
 			void limiteTerrain();
 			void detectionSol();
 			void detectionCollision();
