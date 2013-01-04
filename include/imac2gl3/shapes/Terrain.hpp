@@ -45,8 +45,8 @@ namespace imac2gl3 {
 			
 			void blockRemove(int height, int width, int x, int y, int sol);
 			
-			void addBlock(int x, int y, int z);
-			void deleteBlock(int x, int y, int z);
+			bool addBlock(int x, int y, int z);
+			bool deleteBlock(int x, int y, int z);
 						
 			bool hasFreeSurface(int i, int j, int k);
 			int getSolCoordonnee(glm::vec3 position);

@@ -398,11 +398,20 @@ namespace imac2gl3 {
 		}
 	}
 	
-	void Terrain::addBlock(int x, int y, int z){
-		
+	bool Terrain::addBlock(int x, int y, int z){
+		int sol = getSolCoordonnee(glm::vec3(x,y,z));
+		if(terrain(x, -z, y) == 0 && hasFreeSurface(x, -z, y) && y >= sol+1){
+			terrain(x, -z, sol+1) = 1;
+			return true;
+		}
+		else return false;
 	}
-	void Terrain::deleteBlock(int x, int y, int z){
-		
+	bool Terrain::deleteBlock(int x, int y, int z){
+		if(terrain(x, -z, y) != 0 && hasFreeSurface(x, -z, y)){
+			terrain(x, -z, y) = 0;
+			return true;
+		}
+		else return false;
 	}
 	
 	bool Terrain::hasFreeSurface(int i, int j, int k){

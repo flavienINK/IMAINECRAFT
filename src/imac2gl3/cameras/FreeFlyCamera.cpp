@@ -50,6 +50,8 @@ namespace imac2gl3 {
 	
 	void FreeFlyCamera::rotateLeft(float degrees){
 		m_fPhi += PI * degrees / 180;
+		if( m_fPhi > PI ) m_fPhi = -PI;
+		if( m_fPhi < -PI ) m_fPhi = PI;
 		computeDirectionVectors();
 	}
 
@@ -85,12 +87,27 @@ namespace imac2gl3 {
 	}
 	
 	void FreeFlyCamera::breakBlock(){
-		std::cout<<"Break Block"<<std::endl;
+		int x, y, z;
+		x = m_fPosition.x + m_FrontVector.x;
+		y = m_fPosition.y + m_FrontVector.y + 1.5;
+		z = m_fPosition.z + m_FrontVector.z;
+		
+		//Destruction bloc
+		terrain->deleteBlock(x, y+1, z);
+		//Destruction bloc inferieur
+		if( m_fTheta < -(85*PI/180) ) terrain->deleteBlock( x + m_FrontVector.x, y + 1 + m_FrontVector.y, z + m_FrontVector.z);
 		
 	}
 	
 	
 	void FreeFlyCamera::createBlock(){
+		int x, y, z;
+		x = m_fPosition.x + m_FrontVector.x;
+		y = m_fPosition.y + m_FrontVector.y + 1.5;
+		z = m_fPosition.z + m_FrontVector.z;
+		
+		//Ajout bloc en evitant dajouter sur le personnage
+		if( x != (int)m_fPosition.x || z != (int)m_fPosition.z || y != (int)m_fPosition.y+1 ) terrain->addBlock(x, y+1, z);
 		std::cout<<"Create Block"<<std::endl;
 	}
 }
