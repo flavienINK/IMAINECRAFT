@@ -35,10 +35,10 @@ namespace imac2gl3 {
 			Terrain();
 			
 			void afficherTerrain();
-			void save(glm::vec3);
+			void save(glm::vec3) const;
 			void load(std::string nom);
 			float loadPositionCam(std::string nom, char position3D);
-			void draw(MatrixStack &mstack, glm::vec3 position, int profondeur);
+			void draw(MatrixStack &mstack, glm::vec3 position, int profondeur) const;
 			
 			void relief(int height, int width, int x, int y, int sol);
 			void pyramid(int height, int width, int x, int y, int sol);
@@ -50,10 +50,10 @@ namespace imac2gl3 {
 			bool addBlock(int x, int y, int z);
 			bool deleteBlock(int x, int y, int z);
 						
-			bool hasFreeSurface(int i, int j, int k);
-			int getSolCoordonnee(glm::vec3 position);
-			int getNearestCollisionX(glm::vec3 position);
-			int getNearestCollisionY(glm::vec3 position);
+			bool hasFreeSurface(int i, int j, int k) const;
+			int getSolCoordonnee(glm::vec3 position) const;
+			int getNearestCollisionX(glm::vec3 position) const;
+			int getNearestCollisionY(glm::vec3 position) const;
 	};
 }
 

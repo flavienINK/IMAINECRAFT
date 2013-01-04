@@ -67,7 +67,7 @@ namespace imac2gl3 {
 		// Detection saut actif
 		if ( SDL_GetTicks() < m_jump.end && m_jump.active ) moveUp(SPEED_DEPLACEMENT * 1.5);
 		
-		//
+		//Detection des collisions dans les 3 directions
 		detectionSol();
 		detectionCollision();
 		
@@ -76,7 +76,7 @@ namespace imac2gl3 {
 		return V;
 	}
 	
-	glm::vec3 FreeFlyCamera::getPosition(){
+	glm::vec3 FreeFlyCamera::getPosition() const {
 		return m_fPosition;
 	}
 
@@ -86,7 +86,7 @@ namespace imac2gl3 {
 		m_UpVector = glm::cross(m_FrontVector, m_LeftVector);
 	}
 	
-	void FreeFlyCamera::breakBlock(){
+	void FreeFlyCamera::breakBlock() const {
 		int x, y, z;
 		x = m_fPosition.x + m_FrontVector.x;
 		y = m_fPosition.y + m_FrontVector.y + 1.5;
@@ -99,7 +99,7 @@ namespace imac2gl3 {
 		
 	}	
 	
-	void FreeFlyCamera::createBlock(){
+	void FreeFlyCamera::createBlock() const {
 		int x, y, z;
 		x = m_fPosition.x + m_FrontVector.x;
 		y = m_fPosition.y + m_FrontVector.y + 1.5;

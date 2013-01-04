@@ -51,7 +51,7 @@ namespace imac2gl3 {
 			}
 	}
 	
-	void Terrain::draw(MatrixStack &mstack, glm::vec3 position, int profondeur){
+	void Terrain::draw(MatrixStack &mstack, glm::vec3 position, int profondeur) const {
 		
 		//Compensation taille du cube
 		mstack.translate(glm::vec3(0.5, -0.5, -0.5));
@@ -402,7 +402,7 @@ namespace imac2gl3 {
 		else return false;
 	}
 	
-	bool Terrain::hasFreeSurface(int i, int j, int k){
+	bool Terrain::hasFreeSurface(int i, int j, int k) const {
 		int imax = std::min(i+1, LONGUEUR_TERRRAIN-1);
 		int imin = std::max(i-1, 0);
 		int jmax = std::min(j+1, LARGEUR_TERRRAIN-1);
@@ -421,7 +421,7 @@ namespace imac2gl3 {
 	}
 	
 	//Donne la coordonnée du sol en fonction de la position
-	int Terrain::getSolCoordonnee(glm::vec3 position){
+	int Terrain::getSolCoordonnee(glm::vec3 position) const{
 		glm::vec3 cubePosition = glm::floor(glm::abs(position));
 		int X = cubePosition.x;
 		int Z = cubePosition.z;
@@ -432,7 +432,7 @@ namespace imac2gl3 {
 		return k;
 	}
 	
-	int Terrain::getNearestCollisionX(glm::vec3 position){
+	int Terrain::getNearestCollisionX(glm::vec3 position) const{
 		//Hauteur du perso => +1
 		int z = position.y + 1;
 		int y = -position.z;
@@ -484,7 +484,7 @@ namespace imac2gl3 {
 
 	}
 			
-	int Terrain::getNearestCollisionY(glm::vec3 position){
+	int Terrain::getNearestCollisionY(glm::vec3 position) const{
 		//Hauteur du perso => +1
 		int z = position.y + 1;
 		int x = position.x ;
@@ -535,7 +535,7 @@ namespace imac2gl3 {
 		
 	}
 		
-	void Terrain::save(glm::vec3 vecPos){
+	void Terrain::save(glm::vec3 vecPos) const{
 		string nom;
 		cout << "Nom du fichier a enregistrer :" <<endl;
 		cin >> nom;

@@ -17,6 +17,7 @@ namespace imac2gl3 {
 			TerrainData(): taille(LONGUEUR_TERRRAIN*LARGEUR_TERRRAIN*HAUTEUR_TERRRAIN) {data.resize(taille);std::cout<<"taille :"<<taille<<std::endl; };
 			
 			int& operator()(int i, int j, int k){ return data[i*( LARGEUR_TERRRAIN * HAUTEUR_TERRRAIN ) + j*HAUTEUR_TERRRAIN + k];}
+			const int& operator()(int i, int j, int k) const{ return data[i*( LARGEUR_TERRRAIN * HAUTEUR_TERRRAIN ) + j*HAUTEUR_TERRRAIN + k];}
 			
 	};
 }

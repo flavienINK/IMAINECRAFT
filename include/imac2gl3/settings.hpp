@@ -1,7 +1,7 @@
 #ifndef _SETTINGS_HPP_
 #define _SETTINGS_HPP_
 
-        #include <cmath>
+    #include <cmath>
         
 	#define SPEED_DEPLACEMENT 0.2
 	#define MOUSE_SENSITIVITY 0.8

@@ -39,21 +39,20 @@ namespace imac2gl3 {
 			void rotateUp(float degrees);
 			
 			glm::mat4 getViewMatrix();
-			glm::vec3 getPosition();
+			glm::vec3 getPosition() const;
 			void computeDirectionVectors();
 			
 			void setPositionX(int positionX);
 			void setPositionY(int positionY);
 			void setPositionZ(int positionZ);
-			
-			void limiteTerrain();
+
 			void detectionSol();
 			void detectionCollision();
 			
-			void breakBlock();
-			void createBlock();
+			void breakBlock() const;
+			void createBlock() const;
 			
-			void afficherCam(){std::cout<<"position : x :"<<m_fPosition.x<<" y : "<<m_fPosition.y<<" z : "<<m_fPosition.z<<std::endl<<"frontVector : ("<<m_FrontVector.x<<", "<<m_FrontVector.y<<", "<<m_FrontVector.z<<")"<<std::endl<<"upVector : ("<<m_UpVector.x<<", "<<m_UpVector.y<<", "<<m_UpVector.z<<")"<<std::endl<<"(Teta, phi) : ("<<m_fTheta<<", "<<m_fPhi<<")"<<std::endl;};
+			void afficherCam() const {std::cout<<"position : x :"<<m_fPosition.x<<" y : "<<m_fPosition.y<<" z : "<<m_fPosition.z<<std::endl<<"frontVector : ("<<m_FrontVector.x<<", "<<m_FrontVector.y<<", "<<m_FrontVector.z<<")"<<std::endl<<"upVector : ("<<m_UpVector.x<<", "<<m_UpVector.y<<", "<<m_UpVector.z<<")"<<std::endl<<"(Teta, phi) : ("<<m_fTheta<<", "<<m_fPhi<<")"<<std::endl;};
 			
 	};
 }
