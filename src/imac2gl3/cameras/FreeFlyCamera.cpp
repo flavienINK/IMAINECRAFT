@@ -107,7 +107,6 @@ namespace imac2gl3 {
 		
 		//Ajout bloc en evitant dajouter sur le personnage
 		if( x != (int)m_fPosition.x || z != (int)m_fPosition.z || y != (int)m_fPosition.y+1 ) terrain->addBlock(x, y+1, z);
-		std::cout<<"Create Block"<<std::endl;
 	}
 	
 	void FreeFlyCamera::setPositionX(int positionX){

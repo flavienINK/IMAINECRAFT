@@ -76,9 +76,9 @@ namespace imac2gl3 {
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, cube.getTexture());
 			
-				for(int i=imin; i<imax; ++i) 
-					for(int j=jmin; j<jmax; ++j)
-						for(int k=kmin; k<kmax; ++k)
+				for(int i=imin; i<=imax; ++i) 
+					for(int j=jmin; j<=jmax; ++j)
+						for(int k=kmin; k<=kmax; ++k)
 						{
 							if(terrain(i, j, k) == 1 && hasFreeSurface(i, j, k)){
 									mstack.push();
@@ -102,13 +102,13 @@ namespace imac2gl3 {
 		{
 			//Boucle concernante le cube2	
 			//Bind de la Texture
-			GLShapeInstance cube(myCube2);
+			GLShapeInstance cube(myCube1);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, cube.getTexture());
 		
-				for(int i=imin; i<imax; ++i) 
-					for(int j=jmin; j<jmax; ++j)
-						for(int k=kmin; k<kmax; ++k)
+				for(int i=imin; i<=imax; ++i) 
+					for(int j=jmin; j<=jmax; ++j)
+						for(int k=kmin; k<=kmax; ++k)
 						{
 							if(terrain(i, j, k) == 2 && hasFreeSurface(i, j, k)){
 								mstack.push();
@@ -126,7 +126,26 @@ namespace imac2gl3 {
 			//Debind de la texture
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, 0);
+			
+			
+			
 		}
+		
+		//Skybox
+		GLShapeInstance cube(mySkybox);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, cube.getTexture());
+		
+		mstack.push();
+		mstack.translate(position);
+		
+		//Transmission de la matrice MVP au vertex shader
+		glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
+		
+		cube.draw();
+		
+		mstack.pop();
+		
 	}
 	
 	void Terrain::relief(int height, int width, int x, int y, int sol){
@@ -443,13 +462,13 @@ namespace imac2gl3 {
 
 		int pos, neg;
 		int i=glm::ceil(position.x);
-		while(i<LONGUEUR_TERRRAIN && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
+		while(i<position.x+2 && i<LONGUEUR_TERRRAIN && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
 			i++;
 		}
 		pos=i;
 		
 		i=glm::floor(position.x);
-		while(i>0 && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
+		while(i>position.x-2 && i>0 && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
 			i--;
 		}
 		neg=i;
@@ -457,13 +476,13 @@ namespace imac2gl3 {
 		if( y1 != y ){
 			
 			i=glm::ceil(position.x);
-			while(i<LONGUEUR_TERRRAIN && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
+			while(i<position.x+2 && i<LONGUEUR_TERRRAIN && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
 				i++;
 			}
 			if( i < pos ) pos = i;
 			
 			i=glm::floor(position.x);
-			while(i>0 && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
+			while(i>position.x-2 && i>0 && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
 				i--;
 			}
 			if( i > neg ) neg = i;
@@ -495,12 +514,12 @@ namespace imac2gl3 {
 		
 		int pos, neg;
 		int j=glm::ceil(-position.z);
-		while(j<LARGEUR_TERRRAIN && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
+		while(j<(-position.z)+2 && j<LARGEUR_TERRRAIN && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
 			j++;
 		}
 		pos=j;
 		j=glm::floor(-position.z);
-		while(j>0 && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
+		while(j>(-position.z)-2 && j>0 && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
 			j--;
 		}
 		neg=j;
@@ -508,13 +527,13 @@ namespace imac2gl3 {
 		if( x1 != x ){
 			
 			j=glm::ceil(-position.z);
-			while(j<LONGUEUR_TERRRAIN && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
+			while(j<(-position.z)+2 && j<LARGEUR_TERRRAIN && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
 				j++;
 			}
 			if( j < pos ) pos = j;
 			
 			j=glm::floor(-position.z);
-			while(j>0 && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
+			while(j>(-position.z)-2 && j>0 && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
 				j--;
 			}
 			if( j > neg ) neg = j;
@@ -532,6 +551,7 @@ namespace imac2gl3 {
 			if(glm::abs((-position.z)-(float)pos) < glm::abs((-position.z)-(float)(neg+1))) return pos;
 			else return neg+1;
 		}
+		
 		
 	}
 		

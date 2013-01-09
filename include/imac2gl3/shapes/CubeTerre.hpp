@@ -1,5 +1,5 @@
-#ifndef _IMAC2GL3_CUBEBOIS_HPP_
-#define _IMAC2GL3_CUBEBOIS_HPP_
+#ifndef _IMAC2GL3_CUBETERRE_HPP_
+#define _IMAC2GL3_CUBETERRE_HPP_
 
 #include <GL/glew.h>
 #include <vector>

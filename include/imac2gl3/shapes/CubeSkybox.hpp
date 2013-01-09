@@ -10,15 +10,15 @@
 namespace imac2gl3 {
 
 
-class Cube1: public Cube {
+class CubeSkybox: public Cube {
 	
 	private:
 		GLuint texture;
 		
 	public:
 		
-		Cube1(){
-			SDL_Surface* tex1 = IMG_Load("img/skybox.png");
+		CubeSkybox():Cube(49){
+			SDL_Surface* tex1 = IMG_Load("img/herbe.png");
 		
 			glGenTextures(1, &texture);
 			
