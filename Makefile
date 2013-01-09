@@ -1,6 +1,6 @@
 CC = g++
-CFLAGS = -g -Wall -ansi -pedantic -I include
-LDFLAGS = -lSDL -lGL -lSDL_image
+CFLAGS = -g -Wall -ansi -pedantic -I include -I/usr/include/SDL
+LDFLAGS = -lSDL -lGL -lSDL_image -lSDL_mixer -lvorbisfile -lvorbis -logg
 
 SRC_PATH = src
 BIN_PATH = bin

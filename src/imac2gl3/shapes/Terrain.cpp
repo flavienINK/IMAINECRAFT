@@ -3,7 +3,7 @@
 using namespace std;
 
 namespace imac2gl3 {
-
+	
 	Terrain::Terrain(){
 		
 		// Chargement des shaders
@@ -34,10 +34,21 @@ namespace imac2gl3 {
 			}
 		}
 		
-
-		/* Chaine de montagnes */
-		for(int i = 1; i<5000; ++i) relief(randomBalance(10), 15, randomPosition('x'), randomPosition('y'), sol);
-		for(int i = 1; i<50; ++i) blockRemove(10, 12, randomPosition('x'), randomPosition('y'), sol+5);
+		/* relief */
+		for(int i = 1; i<1000; ++i) make(randomBalance(10), 15, randomPosition('x'), randomPosition('y'), sol, 2); // montagne
+		for(int i = 1; i<50; ++i) blockRemove(10, 12, randomPosition('x'), randomPosition('y'), sol+5); // creux
+		for(int i = 1; i<200; ++i) make(5, 15, randomPosition('x'), randomPosition('y'), sol-3, 3); // roche sous terre
+		
+		for(int i=0; i<LONGUEUR_TERRRAIN; ++i){
+			for(int j=0; j<LARGEUR_TERRRAIN; ++j){
+				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
+					if(terrain(i, j, k) == 2 && terrain(i, j, k+1) != 0)
+					{
+						terrain(i, j, k) = 1;
+					}
+				}	
+			}
+		}
 		
 	}
 	
@@ -225,8 +236,8 @@ namespace imac2gl3 {
 		delete cube;
 	}
 	
-	void Terrain::relief(int height, int width, int x, int y, int sol){
-		int idTex = 2;
+	void Terrain::make(int height, int width, int x, int y, int sol, int id_Tex){
+		int idTex = id_Tex;
 		int aleaX, aleaY;
 		for(int hauteur = 0; hauteur < height; ++hauteur)
 		{
@@ -283,100 +294,6 @@ namespace imac2gl3 {
 		}
 	}
 	
-	void Terrain::water(int length, int width, int x, int y, int sol){
-		int idTex = 1;
-		for(int hauteur = 0; hauteur < length; ++hauteur)
-		{
-			for(int i = 1; i<width-length; ++i)
-			{
-				if
-				(
-					x+i < LONGUEUR_TERRRAIN &&
-					x-i > 0 &&
-					y+i < LARGEUR_TERRRAIN &&
-					y-i > 0
-				)
-				{
-					/* pivot */
-					if(terrain(x, y, sol+1+hauteur)==0) terrain(x, y, sol+1+hauteur) = idTex;
-					/* etoile */
-					if(terrain(x+i, y, sol+1+hauteur)==0) terrain(x+i, y, sol+1+hauteur) = idTex;
-					if(terrain(x, y+i, sol+1+hauteur)==0) terrain(x, y+i, sol+1+hauteur) = idTex;
-					if(terrain(x, y-i, sol+1+hauteur)==0) terrain(x, y-i, sol+1+hauteur) = idTex;
-					if(terrain(x-i, y, sol+1+hauteur)==0) terrain(x-i, y, sol+1+hauteur) = idTex;
-					for(int j = 1; j<width-hauteur; j++)
-					{
-						if
-						(
-							x+i < LONGUEUR_TERRRAIN &&
-							x-i > 0 &&
-							y+i < LARGEUR_TERRRAIN &&
-							y-i > 0
-						)
-						{
-							/*zone 1*/
-							if(terrain(x+i, y+j, sol+1+hauteur)==0) terrain(x+i, y+j, sol+1+hauteur) = idTex;
-							/*zone 2*/
-							if(terrain(x+i, y-j, sol+1+hauteur)==0) terrain(x+i, y-j, sol+1+hauteur) = idTex;
-							/*zone 3*/
-							if(terrain(x-i, y+j, sol+1+hauteur)==0) terrain(x-i, y+j, sol+1+hauteur) = idTex;
-							/*zone 4*/
-							if(terrain(x-i, y-j, sol+1+hauteur)==0) terrain(x-i, y-j, sol+1+hauteur) = idTex;
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	void Terrain::pyramid(int height, int width, int x, int y, int sol){
-		blockRemove(10, width+1, x, y, sol);
-		int idTex = 1;
-		for(int hauteur = 0; hauteur < height; ++hauteur)
-		{
-			for(int i = 1; i<width-hauteur; ++i)
-			{
-				if
-				(
-					x+i < LONGUEUR_TERRRAIN &&
-					x-i > 0 &&
-					y+i < LARGEUR_TERRRAIN &&
-					y-i > 0
-				)
-				{
-					/* pivot */
-					terrain(x, y, sol+1+hauteur) = idTex;
-					/* etoile */
-					terrain(x+i, y, sol+1+hauteur) = idTex;
-					terrain(x, y+i, sol+1+hauteur) = idTex;
-					terrain(x, y-i, sol+1+hauteur) = idTex;
-					terrain(x-i, y, sol+1+hauteur) = idTex;
-					for(int j = 1; j<width-hauteur; j++)
-					{
-						if
-						(
-							x+i < LONGUEUR_TERRRAIN &&
-							x-i > 0 &&
-							y+i < LARGEUR_TERRRAIN &&
-							y-i > 0
-						)
-						{
-							/*zone 1*/
-							terrain(x+i, y+j, sol+1+hauteur) = idTex;
-							/*zone 2*/
-							terrain(x+i, y-j, sol+1+hauteur) = idTex;
-							/*zone 3*/
-							terrain(x-i, y+j, sol+1+hauteur) = idTex;
-							/*zone 4*/
-							terrain(x-i, y-j, sol+1+hauteur) = idTex;
-						}
-					}
-				}
-			}
-			
-		}
-	}
-	
 	void Terrain::blockRemove(int height, int width, int x, int y, int sol){
 		int idTex = 0;
 		for(int hauteur = 0; hauteur < height; ++hauteur)
@@ -421,64 +338,6 @@ namespace imac2gl3 {
 				}
 			}
 			
-		}
-	}
-	
-	void Terrain::cavity(int height, int width, int x, int y, int sol){
-		int idTex = 0;
-		int aleaX, aleaY;
-		for(int hauteur = 0; hauteur < height; ++hauteur)
-		{
-			if (hauteur == sol)
-			{
-				aleaX = 0;
-				aleaY = 0;
-			}
-			else
-			{
-				aleaX = randomBalance(2);
-				aleaY = randomBalance(2);
-			}
-			
-			for(int i = 1; i<width-hauteur; ++i)
-			{
-				if
-				(
-					x+i+aleaX < LONGUEUR_TERRRAIN &&
-					x-i+aleaX  > 0 &&
-					y+i+aleaY < LARGEUR_TERRRAIN &&
-					y-i+aleaY > 0
-				)
-				{
-					/* pivot cavite */
-					if(terrain(x+aleaX, y+aleaY, sol-hauteur)!=0) terrain(x+aleaX ,y+aleaY , sol-hauteur) = idTex;
-					/* etoile */
-					if(terrain(x+i+aleaX, y+aleaY, sol-hauteur)!=0) terrain(x+i+aleaX, y+aleaY, sol-hauteur) = idTex;
-					if(terrain(x+aleaX, y+i+aleaY, sol-hauteur)!=0) terrain(x+aleaX, y+i+aleaY, sol-hauteur) = idTex;
-					if(terrain(x+aleaX, y-i+aleaY, sol-hauteur)!=0) terrain(x+aleaX, y-i+aleaY, sol-hauteur) = idTex;
-					if(terrain(x-i+aleaX, y+aleaY, sol-hauteur)!=0) terrain(x-i+aleaX, y+aleaY, sol-hauteur) = idTex;
-					for(int j = 1; j<width-hauteur; j++)
-					{
-						if
-						(
-							x+i+aleaX < LONGUEUR_TERRRAIN &&
-							x-i+aleaX > 0 &&
-							y+i+aleaY < LARGEUR_TERRRAIN &&
-							y-i+aleaY > 0
-						)
-						{
-							/*zone 1*/
-							if(terrain(x+i+aleaX, y+j+aleaY, sol-hauteur)!=0) terrain(x+i+aleaX, y+j+aleaY, sol-hauteur) = idTex;
-							/*zone 2*/
-							if(terrain(x+i+aleaX, y-j+aleaY, sol-hauteur)!=0) terrain(x+i+aleaX, y-j+aleaY, sol-hauteur) = idTex;
-							/*zone 3*/
-							if(terrain(x-i+aleaX, y+j+aleaY, sol-hauteur)!=0) terrain(x-i+aleaX, y+j+aleaY, sol-hauteur) = idTex;
-							/*zone 4*/
-							if(terrain(x-i+aleaX, y-j+aleaY, sol-hauteur)!=0) terrain(x-i+aleaX, y-j+aleaY, sol-hauteur) = idTex;
-						}
-					}
-				}
-			}
 		}
 	}
 	
