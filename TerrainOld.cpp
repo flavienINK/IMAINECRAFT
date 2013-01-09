@@ -51,7 +51,7 @@ namespace imac2gl3 {
 			}
 	}
 	
-	void Terrain::draw(MatrixStack &mstack, glm::vec3 position, int profondeur){
+	void Terrain::draw(MatrixStack &mstack, glm::vec3 position, int profondeur) const {
 		
 		//Compensation taille du cube
 		mstack.translate(glm::vec3(0.5, -0.5, -0.5));
@@ -69,148 +69,138 @@ namespace imac2gl3 {
 		int kmax = std::min( (int)position.y + profondeur, HAUTEUR_TERRRAIN-1 );
 		int kmin = std::max( (int)position.y - profondeur, 0 );
 		
-		GLShapeInstance* cube = new GLShapeInstance(myCubeTerre);
-		int lastCubeDrawn = 0;	
-		for(int i=imin; i<=imax; ++i) 
-			for(int j=jmin; j<=jmax; ++j)
-				for(int k=kmin; k<=kmax; ++k)
-				{
-					if (hasFreeSurface(i, j, k)){
-						
-						if(terrain(i, j, k) == 1){
-							
-							if( lastCubeDrawn != 1){
-								delete cube;
-								cube = new GLShapeInstance(myCubeTerre);
-								glActiveTexture(GL_TEXTURE0);
-								glBindTexture(GL_TEXTURE_2D, cube->getTexture());
-								lastCubeDrawn = 1;
+		{
+			//Boucle concernant le CubeTerre
+			//Bind de la Texture
+			
+			
+				for(int i=imin; i<=imax; ++i) 
+					for(int j=jmin; j<=jmax; ++j)
+						for(int k=kmin; k<=kmax; ++k)
+						{
+							if (hasFreeSurface(i, j, k)){
+								if(terrain(i, j, k) == 1){
+									GLShapeInstance cube(myCubeTerre);
+									glActiveTexture(GL_TEXTURE0);
+									glBindTexture(GL_TEXTURE_2D, cube.getTexture());
+									
+									mstack.push();
+									mstack.translate(glm::vec3(i, k, -j));
+									
+									//Transmission de la matrice MVP au vertex shader
+									glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
+									
+									cube.draw();
+									
+									mstack.pop();
+								}
+									
+								if(terrain(i, j, k) == 2){
+									GLShapeInstance cube(myCubeHerbe);
+									glActiveTexture(GL_TEXTURE0);
+									glBindTexture(GL_TEXTURE_2D, cube.getTexture());
+									
+									mstack.push();
+									mstack.translate(glm::vec3(i, k, -j));
+									
+									//Transmission de la matrice MVP au vertex shader
+									glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
+									
+									cube.draw();
+									
+									mstack.pop();
+								}
+								
+								if(terrain(i, j, k) == 3){
+									GLShapeInstance cube(myCubeEau);
+									glActiveTexture(GL_TEXTURE0);
+									glBindTexture(GL_TEXTURE_2D, cube.getTexture());
+									
+									mstack.push();
+									mstack.translate(glm::vec3(i, k, -j));
+									
+									//Transmission de la matrice MVP au vertex shader
+									glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
+									
+									cube.draw();
+									
+									mstack.pop();
+								}
+								
+								if(terrain(i, j, k) == 4){
+									GLShapeInstance cube(myCubeEau);
+									glActiveTexture(GL_TEXTURE0);
+									glBindTexture(GL_TEXTURE_2D, cube.getTexture());
+									
+									mstack.push();
+									mstack.translate(glm::vec3(i, k, -j));
+									
+									//Transmission de la matrice MVP au vertex shader
+									glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
+									
+									cube.draw();
+									
+									mstack.pop();
+								}
+								
+								if(terrain(i, j, k) == 99){
+									GLShapeInstance cube(myCubeBois);
+									glActiveTexture(GL_TEXTURE0);
+									glBindTexture(GL_TEXTURE_2D, cube.getTexture());
+									
+									mstack.push();
+									mstack.translate(glm::vec3(i, k, -j));
+									
+									//Transmission de la matrice MVP au vertex shader
+									glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
+									
+									cube.draw();
+									
+									mstack.pop();
+								}
+								}
 							}
 							
-							mstack.push();
-							mstack.translate(glm::vec3(i, k, -j));
 							
-							//Transmission de la matrice MVP au vertex shader
-							glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
-							
-							cube->draw();
-							
-							mstack.pop();
 							
 						}
-							
-						if(terrain(i, j, k) == 2){
-							
-							
-							if( lastCubeDrawn != 2){
-								delete cube;
-								cube = new GLShapeInstance(myCubeHerbe);
-								glActiveTexture(GL_TEXTURE0);
-								glBindTexture(GL_TEXTURE_2D, cube->getTexture());
-								lastCubeDrawn = 2;
+		
+		{
+			//Boucle concernante le CubeBois	
+			//Bind de la Texture
+			GLShapeInstance cube(myCubeBois);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, cube.getTexture());
+		
+				for(int i=imin; i<=imax; ++i) 
+					for(int j=jmin; j<=jmax; ++j)
+						for(int k=kmin; k<=kmax; ++k)
+						{
+							if(terrain(i, j, k) == 99 && hasFreeSurface(i, j, k)){
+								mstack.push();
+								mstack.translate(glm::vec3(i, k, -j));
+								
+								//Transmission de la matrice MVP au vertex shader
+								glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
+								
+								cube.draw();
+								
+								mstack.pop();
 							}
-							
-							mstack.push();
-							mstack.translate(glm::vec3(i, k, -j));
-							
-							//Transmission de la matrice MVP au vertex shader
-							glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
-							
-							cube->draw();
-							
-							mstack.pop();
 						}
-						
-						if(terrain(i, j, k) == 3){
-							
-							if( lastCubeDrawn != 3){
-								delete cube;
-								cube = new GLShapeInstance(myCubeEau);
-								glActiveTexture(GL_TEXTURE0);
-								glBindTexture(GL_TEXTURE_2D, cube->getTexture());
-								lastCubeDrawn = 3;
-							}
-							
-							mstack.push();
-							mstack.translate(glm::vec3(i, k, -j));
-							
-							//Transmission de la matrice MVP au vertex shader
-							glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
-							
-							cube->draw();
-							
-							mstack.pop();
-						}
-						
-						/*if(terrain(i, j, k) == 4){
-							GLShapeInstance cube(myCubeRoche);
-							
-							if( lastCubeDrawn != 4){
-								glActiveTexture(GL_TEXTURE0);
-								glBindTexture(GL_TEXTURE_2D, cube.getTexture());
-								lastCubeDrawn = 4;
-							}
-							
-							mstack.push();
-							mstack.translate(glm::vec3(i, k, -j));
-							
-							//Transmission de la matrice MVP au vertex shader
-							glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
-							
-							cube.draw();
-							
-							mstack.pop();
-						}
-						
-						if(terrain(i, j, k) == 5){
-							GLShapeInstance cube(myCubeNeige);
-							
-							if( lastCubeDrawn != 5){
-								glActiveTexture(GL_TEXTURE0);
-								glBindTexture(GL_TEXTURE_2D, cube.getTexture());
-								lastCubeDrawn = 5;
-							}
-							
-							mstack.push();
-							mstack.translate(glm::vec3(i, k, -j));
-							
-							//Transmission de la matrice MVP au vertex shader
-							glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
-							
-							cube.draw();
-							
-							mstack.pop();
-						}*/
-						
-						if(terrain(i, j, k) == 99){
-							
-							
-							if( lastCubeDrawn != 99){
-								delete cube;
-								cube = new GLShapeInstance(myCubeBois);
-								glActiveTexture(GL_TEXTURE0);
-								glBindTexture(GL_TEXTURE_2D, cube->getTexture());
-								lastCubeDrawn = 99;
-							}
-							
-							mstack.push();
-							mstack.translate(glm::vec3(i, k, -j));
-							
-							//Transmission de la matrice MVP au vertex shader
-							glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
-							
-							cube->draw();
-							
-							mstack.pop();
-						}
-					}
-				}
+					
+			//Debind de la texture
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			
+			
+			
+		}
 		
 		//Skybox
-		delete cube;
-		cube = new GLShapeInstance(mySkybox);
+		GLShapeInstance cube(mySkybox);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, cube->getTexture());
+		glBindTexture(GL_TEXTURE_2D, cube.getTexture());
 		
 		mstack.push();
 		mstack.translate(position);
@@ -218,11 +208,10 @@ namespace imac2gl3 {
 		//Transmission de la matrice MVP au vertex shader
 		glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
 		
-		cube->draw();
+		cube.draw();
 		
 		mstack.pop();
 		
-		delete cube;
 	}
 	
 	void Terrain::relief(int height, int width, int x, int y, int sol){

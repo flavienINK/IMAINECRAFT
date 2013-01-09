@@ -18,7 +18,7 @@ class CubeTerre: public Cube {
 	public:
 		
 		CubeTerre(){
-			SDL_Surface* tex1 = IMG_Load("img/herbe2.png");
+			SDL_Surface* tex1 = IMG_Load("img/terre.png");
 		
 			glGenTextures(1, &texture);
 			
