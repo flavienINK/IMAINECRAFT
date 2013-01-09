@@ -18,8 +18,9 @@ namespace imac2gl3 {
 	void FreeFlyCamera::jumpLaunch(float time){
 		if( !m_jump.active ){
 				m_jump.active=true;
-				m_jump.start = SDL_GetTicks();
-				m_jump.end = m_jump.start + time * 1000;
+				m_jump.ended=false;
+				m_jump.start = terrain->getSolCoordonnee(m_fPosition);
+				m_jump.end = m_jump.start + 1.5;
 		}
 	}	
 	
@@ -65,7 +66,8 @@ namespace imac2gl3 {
 	glm::mat4 FreeFlyCamera::getViewMatrix(){
 		
 		// Detection saut actif
-		if ( SDL_GetTicks() < m_jump.end && m_jump.active ) moveUp(SPEED_DEPLACEMENT * 1.5);
+		if( m_jump.active && m_fPosition.y >= m_jump.end ) m_jump.ended = true;
+		if ( !m_jump.ended ) moveUp(SPEED_DEPLACEMENT * 1.5);
 		
 		//Detection des collisions dans les 3 directions
 		detectionSol();

@@ -10,6 +10,7 @@
 
 typedef struct Jump{
 	bool active;
+	bool ended;
 	int start;
 	int end;
 }Jump;
@@ -28,7 +29,7 @@ namespace imac2gl3 {
 			Jump  m_jump;
 
 		public: 
-			FreeFlyCamera(const glm::vec3 &startPosition, Terrain *_terrain):m_fPosition(startPosition), m_fPhi(PI), m_fTheta(-PI/2), terrain(_terrain) { m_jump.active = false; computeDirectionVectors(); };
+			FreeFlyCamera(const glm::vec3 &startPosition, Terrain *_terrain):m_fPosition(startPosition), m_fPhi(PI), m_fTheta(-PI/2), terrain(_terrain) { m_jump.active = false; m_jump.ended = true; computeDirectionVectors(); };
 			
 			void moveFront(float t);
 			void moveLeft(float t);
