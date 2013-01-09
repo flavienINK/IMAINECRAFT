@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 		mstack.mult(V);
 
 		//Dessin du terrain
-		terrain.draw(mstack, Cam.getPosition(), 50);
+		terrain.draw(mstack, Cam.getPosition(), 30);
         
         //Evenements souris
         SDL_Event e;
