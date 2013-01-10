@@ -19,7 +19,7 @@ class Cube {
     static const GLsizei TEX_COORDS_OFFSET = (POSITION_NUM_COMPONENTS + NORMAL_NUM_COMPONENTS) * sizeof(GLfloat);
     
     static const GLsizei VERTEX_BYTE_SIZE = 
-        (POSITION_NUM_COMPONENTS + NORMAL_NUM_COMPONENTS + TEXCOORDS_NUM_COMPONENTS) * sizeof(GLfloat);
+        (POSITION_NUM_COMPONENTS + NORMAL_NUM_COMPONENTS + TEXCOORDS_NUM_COMPONENTS) * sizeof(GLfloat);    
         
     // Pointeur vers les données du tableau
     ShapeVertex m_pDataPointer[36]; 

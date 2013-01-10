@@ -17,13 +17,14 @@ namespace imac2gl3 {
 			GLuint vbo;
 			GLuint texture;
 			GLuint vertexCount;
+			bool destructable;
 
 		public:
 			template <class T> GLShapeInstance(const T&);
 			~GLShapeInstance();
 
 			void draw();
-			GLuint getTexture(){return texture;}
+			GLuint getTexture() const{return texture;};
 	};
 }
 

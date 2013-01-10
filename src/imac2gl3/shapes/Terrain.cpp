@@ -4,6 +4,9 @@ using namespace std;
 
 namespace imac2gl3 {
 	
+	enum blocs{ vide=0, terre=1, herbe=2, eau=3, roche=4, neige=5, bois=9 };
+
+	
 	Terrain::Terrain(){
 		
 		// Chargement des shaders
@@ -24,27 +27,27 @@ namespace imac2gl3 {
 				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
 					if(k<=sol)
 					{
-						terrain(i, j, k) = 2;
+						terrain(i, j, k) = terre;
 					}
 					else
 					{
-						terrain(i, j, k) = 0;
+						terrain(i, j, k) = vide;
 					}
 				}	
 			}
 		}
 		
 		/* relief */
-		for(int i = 1; i<1000; ++i) make(randomBalance(10), 15, randomPosition('x'), randomPosition('y'), sol, 2); // montagne
+		for(int i = 1; i<1000; ++i) make(randomBalance(10), 15, randomPosition('x'), randomPosition('y'), sol, herbe); // montagne
 		for(int i = 1; i<50; ++i) blockRemove(10, 12, randomPosition('x'), randomPosition('y'), sol+5); // creux
-		for(int i = 1; i<200; ++i) make(5, 15, randomPosition('x'), randomPosition('y'), sol-3, 3); // roche sous terre
+		for(int i = 1; i<200; ++i) make(5, 15, randomPosition('x'), randomPosition('y'), sol-3, eau); // roche sous terre
 		
 		for(int i=0; i<LONGUEUR_TERRRAIN; ++i){
 			for(int j=0; j<LARGEUR_TERRRAIN; ++j){
 				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
-					if(terrain(i, j, k) == 2 && terrain(i, j, k+1) != 0)
+					if(terrain(i, j, k) == herbe && terrain(i, j, k+1) != 0)
 					{
-						terrain(i, j, k) = 1;
+						terrain(i, j, k) = terre;
 					}
 				}	
 			}
@@ -88,14 +91,14 @@ namespace imac2gl3 {
 				{
 					if (hasFreeSurface(i, j, k)){
 						
-						if(terrain(i, j, k) == 1){
+						if(terrain(i, j, k) == terre){
 							
-							if( lastCubeDrawn != 1){
+							if( lastCubeDrawn != terre){
 								delete cube;
 								cube = new GLShapeInstance(myCubeTerre);
 								glActiveTexture(GL_TEXTURE0);
 								glBindTexture(GL_TEXTURE_2D, cube->getTexture());
-								lastCubeDrawn = 1;
+								lastCubeDrawn = terre;
 							}
 							
 							mstack.push();
@@ -110,15 +113,15 @@ namespace imac2gl3 {
 							
 						}
 							
-						if(terrain(i, j, k) == 2){
+						if(terrain(i, j, k) == herbe){
 							
 							
-							if( lastCubeDrawn != 2){
+							if( lastCubeDrawn != herbe){
 								delete cube;
 								cube = new GLShapeInstance(myCubeHerbe);
 								glActiveTexture(GL_TEXTURE0);
 								glBindTexture(GL_TEXTURE_2D, cube->getTexture());
-								lastCubeDrawn = 2;
+								lastCubeDrawn = herbe;
 							}
 							
 							mstack.push();
@@ -132,14 +135,14 @@ namespace imac2gl3 {
 							mstack.pop();
 						}
 						
-						if(terrain(i, j, k) == 3){
+						if(terrain(i, j, k) == eau){
 							
-							if( lastCubeDrawn != 3){
+							if( lastCubeDrawn != eau){
 								delete cube;
 								cube = new GLShapeInstance(myCubeEau);
 								glActiveTexture(GL_TEXTURE0);
 								glBindTexture(GL_TEXTURE_2D, cube->getTexture());
-								lastCubeDrawn = 3;
+								lastCubeDrawn = eau;
 							}
 							
 							mstack.push();
@@ -153,13 +156,13 @@ namespace imac2gl3 {
 							mstack.pop();
 						}
 						
-						/*if(terrain(i, j, k) == 4){
+						/*if(terrain(i, j, k) == roche){
 							GLShapeInstance cube(myCubeRoche);
 							
-							if( lastCubeDrawn != 4){
+							if( lastCubeDrawn != roche){
 								glActiveTexture(GL_TEXTURE0);
 								glBindTexture(GL_TEXTURE_2D, cube.getTexture());
-								lastCubeDrawn = 4;
+								lastCubeDrawn = roche;
 							}
 							
 							mstack.push();
@@ -173,13 +176,13 @@ namespace imac2gl3 {
 							mstack.pop();
 						}
 						
-						if(terrain(i, j, k) == 5){
+						if(terrain(i, j, k) == neige){
 							GLShapeInstance cube(myCubeNeige);
 							
-							if( lastCubeDrawn != 5){
+							if( lastCubeDrawn != neige){
 								glActiveTexture(GL_TEXTURE0);
 								glBindTexture(GL_TEXTURE_2D, cube.getTexture());
-								lastCubeDrawn = 5;
+								lastCubeDrawn = neige;
 							}
 							
 							mstack.push();
@@ -193,15 +196,15 @@ namespace imac2gl3 {
 							mstack.pop();
 						}*/
 						
-						if(terrain(i, j, k) == 99){
+						if(terrain(i, j, k) == bois){
 							
 							
-							if( lastCubeDrawn != 99){
+							if( lastCubeDrawn != bois){
 								delete cube;
 								cube = new GLShapeInstance(myCubeBois);
 								glActiveTexture(GL_TEXTURE0);
 								glBindTexture(GL_TEXTURE_2D, cube->getTexture());
-								lastCubeDrawn = 99;
+								lastCubeDrawn = bois;
 							}
 							
 							mstack.push();
@@ -295,7 +298,7 @@ namespace imac2gl3 {
 	}
 	
 	void Terrain::blockRemove(int height, int width, int x, int y, int sol){
-		int idTex = 0;
+		int idTex = vide;
 		for(int hauteur = 0; hauteur < height; ++hauteur)
 		{
 			for(int i = 1; i<width; ++i)
@@ -344,17 +347,27 @@ namespace imac2gl3 {
 	bool Terrain::addBlock(int x, int y, int z){
 		int sol = getSolCoordonnee(glm::vec3(x,y,z));
 		if(terrain(x, -z, y) == 0 && hasFreeSurface(x, -z, y) && y >= sol+1){
-			terrain(x, -z, sol+1) = 99;
+			terrain(x, -z, sol+1) = bois;
 			return true;
 		}
 		else return false;
 	}
 	bool Terrain::deleteBlock(int x, int y, int z){
-		if(terrain(x, -z, y) != 0 && hasFreeSurface(x, -z, y)){
-			terrain(x, -z, y) = 0;
+		if(blocDestructable(x, -z, y) && hasFreeSurface(x, -z, y)){
+			terrain(x, -z, y) = vide;
 			return true;
 		}
 		else return false;
+	}
+	
+	bool Terrain:: blocDestructable(int i, int j, int k) const {
+		int bloc = terrain(i, j, k);
+		if( bloc == terre ) return myCubeTerre.getDestructable();
+		if( bloc == herbe ) return myCubeHerbe.getDestructable();
+		if( bloc == eau ) return myCubeEau.getDestructable();
+		/*if( bloc == roche ) return myCubeRoche.getDestructable();
+		if( bloc == neige ) return myCubeNeige.getDestructable();*/
+		if( bloc == bois ) return myCubeBois.getDestructable();
 	}
 	
 	bool Terrain::hasFreeSurface(int i, int j, int k) const {
@@ -366,12 +379,12 @@ namespace imac2gl3 {
 		int kmin = std::max(k-1, 0);
 		
 			if(
-				terrain(imax, j, k) == 0 || 
-				terrain(imin, j, k) == 0 ||
-				terrain(i, jmax, k) == 0 ||
-				terrain(i, jmin, k) == 0 ||
-				terrain(i, j, kmax) == 0 ||
-				terrain(i, j, kmin) == 0 ) return true;
+				terrain(imax, j, k) == vide || 
+				terrain(imin, j, k) == vide ||
+				terrain(i, jmax, k) == vide ||
+				terrain(i, jmin, k) == vide ||
+				terrain(i, j, kmax) == vide ||
+				terrain(i, j, kmin) == vide ) return true;
 			else return false;
 	}
 	
@@ -381,7 +394,7 @@ namespace imac2gl3 {
 		int X = cubePosition.x;
 		int Z = cubePosition.z;
 		int k = cubePosition.y+1;
-		while ( terrain(X, Z, k) == 0 && k > 0){
+		while ( terrain(X, Z, k) == vide && k > 0){
 			k--;
 		}
 		return k;
@@ -398,13 +411,13 @@ namespace imac2gl3 {
 
 		int pos, neg;
 		int i=glm::ceil(position.x);
-		while(i<position.x+2 && i<LONGUEUR_TERRRAIN && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
+		while(i<position.x+2 && i<LONGUEUR_TERRRAIN && terrain(i, y, z) == vide && terrain(i, y, z+1) == vide){
 			i++;
 		}
 		pos=i;
 		
 		i=glm::floor(position.x);
-		while(i>position.x-2 && i>0 && terrain(i, y, z) == 0 && terrain(i, y, z+1) == 0){
+		while(i>position.x-2 && i>0 && terrain(i, y, z) == vide && terrain(i, y, z+1) == vide){
 			i--;
 		}
 		neg=i;
@@ -412,13 +425,13 @@ namespace imac2gl3 {
 		if( y1 != y ){
 			
 			i=glm::ceil(position.x);
-			while(i<position.x+2 && i<LONGUEUR_TERRRAIN && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
+			while(i<position.x+2 && i<LONGUEUR_TERRRAIN && terrain(i, y1, z) == vide && terrain(i, y1, z+1) == vide){
 				i++;
 			}
 			if( i < pos ) pos = i;
 			
 			i=glm::floor(position.x);
-			while(i>position.x-2 && i>0 && terrain(i, y1, z) == 0 && terrain(i, y1, z+1) == 0){
+			while(i>position.x-2 && i>0 && terrain(i, y1, z) == vide && terrain(i, y1, z+1) == vide){
 				i--;
 			}
 			if( i > neg ) neg = i;
@@ -428,7 +441,7 @@ namespace imac2gl3 {
 		//Cas special bord map
 		if( position.x<2 ){
 			if(glm::abs(position.x-(float)pos) < glm::abs(position.x-(float)(neg))) return pos;
-			else if( terrain(0, y, z) == 0 && terrain(0, y1, z) == 0 ) return neg;
+			else if( terrain(0, y, z) == vide && terrain(0, y1, z) == vide ) return neg;
 			else return neg+1;
 		}
 		//Cas general
@@ -450,12 +463,12 @@ namespace imac2gl3 {
 		
 		int pos, neg;
 		int j=glm::ceil(-position.z);
-		while(j<(-position.z)+2 && j<LARGEUR_TERRRAIN && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
+		while(j<(-position.z)+2 && j<LARGEUR_TERRRAIN && terrain(x, j, z) == vide && terrain(x, j, z+1) == vide){
 			j++;
 		}
 		pos=j;
 		j=glm::floor(-position.z);
-		while(j>(-position.z)-2 && j>0 && terrain(x, j, z) == 0 && terrain(x, j, z+1) == 0){
+		while(j>(-position.z)-2 && j>0 && terrain(x, j, z) == vide && terrain(x, j, z+1) == vide){
 			j--;
 		}
 		neg=j;
@@ -463,13 +476,13 @@ namespace imac2gl3 {
 		if( x1 != x ){
 			
 			j=glm::ceil(-position.z);
-			while(j<(-position.z)+2 && j<LARGEUR_TERRRAIN && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
+			while(j<(-position.z)+2 && j<LARGEUR_TERRRAIN && terrain(x1, j, z) == vide && terrain(x1, j, z+1) == vide){
 				j++;
 			}
 			if( j < pos ) pos = j;
 			
 			j=glm::floor(-position.z);
-			while(j>(-position.z)-2 && j>0 && terrain(x1, j, z) == 0 && terrain(x1, j, z+1) == 0){
+			while(j>(-position.z)-2 && j>0 && terrain(x1, j, z) == vide && terrain(x1, j, z+1) == vide){
 				j--;
 			}
 			if( j > neg ) neg = j;
@@ -479,7 +492,7 @@ namespace imac2gl3 {
 		//Cas special bord map
 		if( -position.z<2 ){
 			if(glm::abs((-position.z)-(float)pos) < glm::abs((-position.z)-(float)(neg))) return pos;
-			else if( terrain(x, 0, z) == 0 && terrain(x1, 0, z) == 0 ) return neg;
+			else if( terrain(x, 0, z) == vide && terrain(x1, 0, z) == vide ) return neg;
 			else return neg+1;
 		}
 		//Cas general
