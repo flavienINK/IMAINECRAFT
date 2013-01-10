@@ -35,31 +35,31 @@ int main(int argc, char** argv) {
     Mix_Chunk *crash, *add, *stepGrass, *stepGround, *stepWood, *pluck;  // For Sounds
     crash = Mix_LoadWAV("son/crash.wav");
     if(!crash) {
-	std::cout<<"Impossible charger sample"<<std::endl;
+	std::cout<<"Impossible charger sample crash"<<std::endl;
     }
     add = Mix_LoadWAV("son/add.wav");
     if(!add) {
-	std::cout<<"Impossible charger sample"<<std::endl;
+	std::cout<<"Impossible charger sample add"<<std::endl;
     }
     stepGrass = Mix_LoadWAV("son/stepGrass.wav");
     if(!stepGrass) {
-	std::cout<<"Impossible charger sample"<<std::endl;
+	std::cout<<"Impossible charger sample grass"<<std::endl;
     }
     stepGround = Mix_LoadWAV("son/stepGround.wav");
     if(!stepGround) {
-	std::cout<<"Impossible charger sample"<<std::endl;
+	std::cout<<"Impossible charger sample ground"<<std::endl;
     }
     stepWood = Mix_LoadWAV("son/stepWood.wav");
     if(!stepWood) {
-	std::cout<<"Impossible charger sample"<<std::endl;
+	std::cout<<"Impossible charger sample wood"<<std::endl;
     }
     pluck = Mix_LoadWAV("son/pluck.wav");
     if(!pluck) {
-	std::cout<<"Impossible charger sample"<<std::endl;
+	std::cout<<"Impossible charger sample pluck"<<std::endl;
     }
     ambient = Mix_LoadMUS("son/ambient.wav");
     if(!ambient) {
-	std::cout<<"Impossible charger sample"<<std::endl;
+	std::cout<<"Impossible charger sample ambient"<<std::endl;
     }
     Mix_PlayMusic(ambient, 1);
     
@@ -196,7 +196,17 @@ int main(int argc, char** argv) {
     
     // Destruction des ressources
     Mix_FreeChunk(crash);
+    Mix_FreeChunk(add);
+    Mix_FreeChunk(stepGrass);
+    Mix_FreeChunk(stepWood);
+    Mix_FreeChunk(pluck);
+    Mix_FreeMusic(ambient);
     crash = NULL;
+    add = NULL;
+    stepGrass = NULL;
+    stepWood = NULL;
+    pluck = NULL;
+    ambient = NULL;
     Mix_CloseAudio();
     Mix_Quit();
    
