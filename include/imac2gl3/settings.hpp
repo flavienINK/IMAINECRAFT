@@ -6,8 +6,8 @@
 	#define SPEED_DEPLACEMENT 0.2
 	#define MOUSE_SENSITIVITY 0.8
 	
-	#define LONGUEUR_TERRRAIN 500
-	#define LARGEUR_TERRRAIN 500
+	#define LONGUEUR_TERRRAIN 1000
+	#define LARGEUR_TERRRAIN 1000
 	#define HAUTEUR_TERRRAIN 30
 	
 	const double PI = atan(1.0)*4;

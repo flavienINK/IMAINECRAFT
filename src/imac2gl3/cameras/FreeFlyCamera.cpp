@@ -47,6 +47,7 @@ namespace imac2gl3 {
 		if( -m_fPosition.z > YNearestCollision && ( (-m_fPosition.z) - YNearestCollision <= 1.9*SPEED_DEPLACEMENT)){
 			m_fPosition.z = - (YNearestCollision + 2*SPEED_DEPLACEMENT);
 		}
+		
 	}
 	
 	void FreeFlyCamera::rotateLeft(float degrees){
@@ -66,7 +67,7 @@ namespace imac2gl3 {
 	glm::mat4 FreeFlyCamera::getViewMatrix(){
 		
 		// Detection saut actif
-		if( m_jump.active && m_fPosition.y >= m_jump.end ) m_jump.ended = true;
+		if( m_fPosition.y >= m_jump.end ) m_jump.ended = true;
 		if ( !m_jump.ended ) moveUp(SPEED_DEPLACEMENT * 1.5);
 		
 		//Detection des collisions dans les 3 directions
