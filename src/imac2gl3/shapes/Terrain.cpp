@@ -27,7 +27,11 @@ namespace imac2gl3 {
 				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
 					if(k<=sol)
 					{
-						terrain(i, j, k) = terre;
+						if(k==1){
+							terrain(i, j, k) = roche;
+						}else{
+							terrain(i, j, k) = terre;
+						}
 					}
 					else
 					{
