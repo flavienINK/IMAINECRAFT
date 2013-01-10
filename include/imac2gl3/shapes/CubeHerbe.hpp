@@ -14,6 +14,7 @@ class CubeHerbe: public Cube {
 	
 	private:
 		GLuint texture;
+		static const bool destructable = true;
 		
 	public:
 		
@@ -33,6 +34,10 @@ class CubeHerbe: public Cube {
 		
 		GLuint getTexture() const {
 			return texture;
+		};
+		
+		bool getDestructable() const {
+			return destructable;
 		};
 };
 

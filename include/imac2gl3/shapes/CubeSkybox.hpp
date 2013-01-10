@@ -34,6 +34,7 @@ class CubeSkybox: public Cube {
 		GLuint getTexture() const {
 			return texture;
 		};
+	
 };
 
 }

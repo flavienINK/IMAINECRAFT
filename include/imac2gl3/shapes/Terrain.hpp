@@ -56,6 +56,7 @@ namespace imac2gl3 {
 			bool addBlock(int x, int y, int z);
 			bool deleteBlock(int x, int y, int z);
 						
+			bool blocDestructable(int i, int j, int k) const;			
 			bool hasFreeSurface(int i, int j, int k) const;
 			int getSolCoordonnee(glm::vec3 position) const;
 			int getNearestCollisionX(glm::vec3 position) const;
