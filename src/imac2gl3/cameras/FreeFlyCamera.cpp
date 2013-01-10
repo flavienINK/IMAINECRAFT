@@ -2,11 +2,56 @@
 
 namespace imac2gl3 {
 
+	void FreeFlyCamera::moveFront(float t, Mix_Chunk * stepGrass, Mix_Chunk * stepGround, Mix_Chunk * stepWood){
+		m_fPosition.x += t * m_FrontVector.x;
+		m_fPosition.z += t * m_FrontVector.z;
+		if(Mix_Playing(0) == 0){
+			// herbe
+			if(terrain->getId((int)m_fPosition.x, (int)-m_fPosition.z, (int)m_fPosition.y) == 2){
+				Mix_PlayChannelTimed(0,stepGrass,0, 450);
+			}
+			// terre
+			if(terrain->getId((int)m_fPosition.x, (int)-m_fPosition.z, (int)m_fPosition.y) == 1){
+				Mix_PlayChannelTimed(0,stepGround,0, 450);
+			}
+			// roche
+			if(terrain->getId((int)m_fPosition.x, (int)-m_fPosition.z, (int)m_fPosition.y) == 4){
+				Mix_PlayChannelTimed(0,stepGround,0, 450);
+			}
+			// cube bois
+			if(terrain->getId((int)m_fPosition.x, (int)-m_fPosition.z, (int)m_fPosition.y) == 9){
+				Mix_PlayChannelTimed(0,stepWood,0, 450);
+			}
+		}
+	}
+	
 	void FreeFlyCamera::moveFront(float t){
 		m_fPosition.x += t * m_FrontVector.x;
 		m_fPosition.z += t * m_FrontVector.z;
 	}
 
+	void FreeFlyCamera::moveLeft(float t, Mix_Chunk * stepGrass, Mix_Chunk * stepGround, Mix_Chunk * stepWood){
+		m_fPosition += t * m_LeftVector;
+		if(Mix_Playing(0) == 0){
+			// herbe
+			if(terrain->getId((int)m_fPosition.x, (int)-m_fPosition.z, (int)m_fPosition.y) == 2){
+				Mix_PlayChannelTimed(0,stepGrass,0, 450);
+			}
+			// terre
+			if(terrain->getId((int)m_fPosition.x, (int)-m_fPosition.z, (int)m_fPosition.y) == 1){
+				Mix_PlayChannelTimed(0,stepGround,0, 450);
+			}
+			// roche
+			if(terrain->getId((int)m_fPosition.x, (int)-m_fPosition.z, (int)m_fPosition.y) == 4){
+				Mix_PlayChannelTimed(0,stepGround,0, 450);
+			}
+			// cube bois
+			if(terrain->getId((int)m_fPosition.x, (int)-m_fPosition.z, (int)m_fPosition.y) == 9){
+				Mix_PlayChannelTimed(0,stepWood,0, 450);
+			}
+		}
+	}
+	
 	void FreeFlyCamera::moveLeft(float t){
 		m_fPosition += t * m_LeftVector;
 	}
@@ -89,27 +134,29 @@ namespace imac2gl3 {
 		m_UpVector = glm::cross(m_FrontVector, m_LeftVector);
 	}
 	
-	void FreeFlyCamera::breakBlock() const {
+	void FreeFlyCamera::breakBlock(Mix_Chunk * son) const {
 		int x, y, z;
 		x = m_fPosition.x + m_FrontVector.x;
 		y = m_fPosition.y + m_FrontVector.y + 1.5;
 		z = m_fPosition.z + m_FrontVector.z;
 		
 		//Destruction bloc
-		terrain->deleteBlock(x, y+1, z);
-		//Destruction bloc inferieur
-		if( m_fTheta < -(85*PI/180) ) terrain->deleteBlock( x + m_FrontVector.x, y + 1 + m_FrontVector.y, z + m_FrontVector.z);
+		terrain->deleteBlock(x, y+1, z, son);
 		
+		//Destruction bloc inferieur
+		if( m_fTheta < -(85*PI/180) ){
+			terrain->deleteBlock( x + m_FrontVector.x, y + 1 + m_FrontVector.y, z + m_FrontVector.z, son);
+		}
 	}	
 	
-	void FreeFlyCamera::createBlock() const {
+	void FreeFlyCamera::createBlock(Mix_Chunk * son) const {
 		int x, y, z;
 		x = m_fPosition.x + m_FrontVector.x;
 		y = m_fPosition.y + m_FrontVector.y + 1.5;
 		z = m_fPosition.z + m_FrontVector.z;
 		
 		//Ajout bloc en evitant dajouter sur le personnage
-		if( x != (int)m_fPosition.x || z != (int)m_fPosition.z || y != (int)m_fPosition.y+1 ) terrain->addBlock(x, y+1, z);
+		if( x != (int)m_fPosition.x || z != (int)m_fPosition.z || y != (int)m_fPosition.y+1 ) terrain->addBlock(x, y+1, z, son);
 	}
 	
 	void FreeFlyCamera::setPositionX(int positionX){

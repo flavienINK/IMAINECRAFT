@@ -20,7 +20,7 @@ namespace imac2gl3 {
 		
 		//int coucheEpaisseur = glm::floor(0.3*HAUTEUR_TERRRAIN);
 		int sol = 10;
-		
+		int hauteurMax = 5;
 		// Construction du terrain entier, tout est rempli et par couche (texture cube)
 		for(int i=0; i<LONGUEUR_TERRRAIN; ++i){
 			for(int j=0; j<LARGEUR_TERRRAIN; ++j){
@@ -38,20 +38,39 @@ namespace imac2gl3 {
 		}
 		
 		/* relief */
-		for(int i = 1; i<1000; ++i) make(randomBalance(10), 15, randomPosition('x'), randomPosition('y'), sol, herbe); // montagne
-		for(int i = 1; i<50; ++i) blockRemove(10, 12, randomPosition('x'), randomPosition('y'), sol+5); // creux
-		for(int i = 1; i<200; ++i) make(5, 15, randomPosition('x'), randomPosition('y'), sol-3, eau); // roche sous terre
+		for(int i = 1; i<10000; ++i) make(randomBalance(hauteurMax), 8, randomPosition('x'), randomPosition('y'), sol, herbe); // montagne
+		for(int i = 1; i<1000; ++i) blockRemove(5, 5, randomPosition('x'), randomPosition('y'), sol+4); // creux
 		
+		/* routine */
 		for(int i=0; i<LONGUEUR_TERRRAIN; ++i){
 			for(int j=0; j<LARGEUR_TERRRAIN; ++j){
 				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
-					if(terrain(i, j, k) == herbe && terrain(i, j, k+1) != 0)
+					if(terrain(i, j, k) == herbe && terrain(i, j, k+1) != vide)
 					{
 						terrain(i, j, k) = terre;
+					}
+					if(terrain(i, j, k) == terre && terrain(i, j, k+1) == vide)
+					{
+						terrain(i, j, k) = herbe;
 					}
 				}	
 			}
 		}
+		
+		for(int i = 1; i<2000; ++i) make(1, randomBalance(hauteurMax), randomPosition('x'), randomPosition('y'), sol+hauteurMax-1, roche);
+		
+		/* routine */
+		for(int i=0; i<LONGUEUR_TERRRAIN; ++i){
+			for(int j=0; j<LARGEUR_TERRRAIN; ++j){
+				for(int k=0; k<HAUTEUR_TERRRAIN; ++k){
+					if(terrain(i, j, k) == roche && terrain(i, j, k-1) == vide)
+					{
+						terrain(i, j, k) = vide;
+					}
+				}	
+			}
+		}
+
 		
 	}
 	
@@ -156,12 +175,13 @@ namespace imac2gl3 {
 							mstack.pop();
 						}
 						
-						/*if(terrain(i, j, k) == roche){
-							GLShapeInstance cube(myCubeRoche);
+						if(terrain(i, j, k) == roche){
 							
 							if( lastCubeDrawn != roche){
+								delete cube;
+								cube = new GLShapeInstance(myCubeRoche);
 								glActiveTexture(GL_TEXTURE0);
-								glBindTexture(GL_TEXTURE_2D, cube.getTexture());
+								glBindTexture(GL_TEXTURE_2D, cube->getTexture());
 								lastCubeDrawn = roche;
 							}
 							
@@ -171,30 +191,10 @@ namespace imac2gl3 {
 							//Transmission de la matrice MVP au vertex shader
 							glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
 							
-							cube.draw();
+							cube->draw();
 							
 							mstack.pop();
 						}
-						
-						if(terrain(i, j, k) == neige){
-							GLShapeInstance cube(myCubeNeige);
-							
-							if( lastCubeDrawn != neige){
-								glActiveTexture(GL_TEXTURE0);
-								glBindTexture(GL_TEXTURE_2D, cube.getTexture());
-								lastCubeDrawn = neige;
-							}
-							
-							mstack.push();
-							mstack.translate(glm::vec3(i, k, -j));
-							
-							//Transmission de la matrice MVP au vertex shader
-							glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(mstack.top()));
-							
-							cube.draw();
-							
-							mstack.pop();
-						}*/
 						
 						if(terrain(i, j, k) == bois){
 							
@@ -344,20 +344,27 @@ namespace imac2gl3 {
 		}
 	}
 	
-	bool Terrain::addBlock(int x, int y, int z){
+	bool Terrain::addBlock(int x, int y, int z, Mix_Chunk *son){
 		int sol = getSolCoordonnee(glm::vec3(x,y,z));
 		if(terrain(x, -z, y) == 0 && hasFreeSurface(x, -z, y) && y >= sol+1){
 			terrain(x, -z, sol+1) = bois;
+			Mix_PlayChannel(1,son,0);
 			return true;
 		}
 		else return false;
 	}
-	bool Terrain::deleteBlock(int x, int y, int z){
+	
+	bool Terrain::deleteBlock(int x, int y, int z, Mix_Chunk *son){
 		if(blocDestructable(x, -z, y) && hasFreeSurface(x, -z, y)){
 			terrain(x, -z, y) = vide;
+			Mix_PlayChannel(1,son,0); 
 			return true;
 		}
 		else return false;
+	}
+	
+	int Terrain::getId(int x, int y, int z){
+		return terrain(x, y, z);
 	}
 	
 	bool Terrain:: blocDestructable(int i, int j, int k) const {
@@ -365,8 +372,8 @@ namespace imac2gl3 {
 		if( bloc == terre ) return myCubeTerre.getDestructable();
 		if( bloc == herbe ) return myCubeHerbe.getDestructable();
 		if( bloc == eau ) return myCubeEau.getDestructable();
-		/*if( bloc == roche ) return myCubeRoche.getDestructable();
-		if( bloc == neige ) return myCubeNeige.getDestructable();*/
+		if( bloc == roche ) return myCubeRoche.getDestructable();
+		//if( bloc == neige ) return myCubeNeige.getDestructable();
 		if( bloc == bois ) return myCubeBois.getDestructable();
 	}
 	

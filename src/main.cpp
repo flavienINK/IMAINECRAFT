@@ -3,6 +3,7 @@
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,6 +25,44 @@ int main(int argc, char** argv) {
     
     std::string nom;
     
+    // Init setup Audio
+    Mix_OpenAudio(44100,AUDIO_S16SYS,2,10000);
+    Mix_AllocateChannels(5);
+    Mix_Volume(1,MIX_MAX_VOLUME/2);
+    
+    // Chargement sample
+    Mix_Music *ambient;  // For Long noise music
+    Mix_Chunk *crash, *add, *stepGrass, *stepGround, *stepWood, *pluck;  // For Sounds
+    crash = Mix_LoadWAV("son/crash.wav");
+    if(!crash) {
+	std::cout<<"Impossible charger sample"<<std::endl;
+    }
+    add = Mix_LoadWAV("son/add.wav");
+    if(!add) {
+	std::cout<<"Impossible charger sample"<<std::endl;
+    }
+    stepGrass = Mix_LoadWAV("son/stepGrass.wav");
+    if(!stepGrass) {
+	std::cout<<"Impossible charger sample"<<std::endl;
+    }
+    stepGround = Mix_LoadWAV("son/stepGround.wav");
+    if(!stepGround) {
+	std::cout<<"Impossible charger sample"<<std::endl;
+    }
+    stepWood = Mix_LoadWAV("son/stepWood.wav");
+    if(!stepWood) {
+	std::cout<<"Impossible charger sample"<<std::endl;
+    }
+    pluck = Mix_LoadWAV("son/pluck.wav");
+    if(!pluck) {
+	std::cout<<"Impossible charger sample"<<std::endl;
+    }
+    ambient = Mix_LoadMUS("son/ambient.wav");
+    if(!ambient) {
+	std::cout<<"Impossible charger sample"<<std::endl;
+    }
+    Mix_PlayMusic(ambient, 1);
+    
     // Propagation d'une graine pour le random
     srand(time(NULL)); // On prend le nombre de secondes ecoulees depuis le commencement
     
@@ -40,8 +79,8 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-	// Creation du Terrain
-	imac2gl3::Terrain terrain;
+    // Creation du Terrain
+    imac2gl3::Terrain terrain;
 	
     // Creation de la matrice de Perspective
     glm::mat4 P = glm::perspective(70.f, WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.1f, 1000.f);
@@ -84,20 +123,22 @@ int main(int argc, char** argv) {
         //Evenements claviers
         Uint8 *keystate = SDL_GetKeyState(NULL);
         
-        if( keystate[SDLK_z] && !keystate[SDLK_q] && !keystate[SDLK_d] ) Cam.moveFront(SPEED_DEPLACEMENT);
-        else if( keystate[SDLK_z] ) Cam.moveFront(SPEED_DEPLACEMENT/sqrt(2));
+        if( keystate[SDLK_z] && !keystate[SDLK_q] && !keystate[SDLK_d] ) Cam.moveFront(SPEED_DEPLACEMENT, stepGrass, stepGround, stepWood);
+        else if( keystate[SDLK_z] ) Cam.moveFront(SPEED_DEPLACEMENT/sqrt(2), stepGrass, stepGround, stepWood);
         
-		if( keystate[SDLK_s] && !keystate[SDLK_q] && !keystate[SDLK_d] ) Cam.moveFront(-SPEED_DEPLACEMENT);
-		else if( keystate[SDLK_s] ) Cam.moveFront(-SPEED_DEPLACEMENT/sqrt(2));
+		if( keystate[SDLK_s] && !keystate[SDLK_q] && !keystate[SDLK_d] ) Cam.moveFront(-SPEED_DEPLACEMENT, stepGrass, stepGround, stepWood);
+		else if( keystate[SDLK_s] ) Cam.moveFront(-SPEED_DEPLACEMENT/sqrt(2), stepGrass, stepGround, stepWood);
 		
-		if( keystate[SDLK_q] && !keystate[SDLK_z] && !keystate[SDLK_s] ) Cam.moveLeft(SPEED_DEPLACEMENT);
-		else if( keystate[SDLK_q] ) Cam.moveLeft(SPEED_DEPLACEMENT/sqrt(2));
+		if( keystate[SDLK_q] && !keystate[SDLK_z] && !keystate[SDLK_s] ) Cam.moveLeft(SPEED_DEPLACEMENT, stepGrass, stepGround, stepWood);
+		else if( keystate[SDLK_q] ) Cam.moveLeft(SPEED_DEPLACEMENT/sqrt(2), stepGrass, stepGround, stepWood);
 		
-		if( keystate[SDLK_d] && !keystate[SDLK_z] && !keystate[SDLK_s] ) Cam.moveLeft(-SPEED_DEPLACEMENT);
-		else if( keystate[SDLK_d] ) Cam.moveLeft(-SPEED_DEPLACEMENT/sqrt(2));
+		if( keystate[SDLK_d] && !keystate[SDLK_z] && !keystate[SDLK_s] ) Cam.moveLeft(-SPEED_DEPLACEMENT, stepGrass, stepGround, stepWood);
+		else if( keystate[SDLK_d] ) Cam.moveLeft(-SPEED_DEPLACEMENT/sqrt(2), stepGrass, stepGround, stepWood);
 		
 		if( keystate[SDLK_SPACE] ) Cam.jumpLaunch(0.4);
 		
+		// Break propagation
+
 		//Pesanteur
 		Cam.moveUp(-SPEED_DEPLACEMENT);
 		
@@ -107,14 +148,13 @@ int main(int argc, char** argv) {
             case SDL_QUIT :
                 done = true;
                 break;
-                
             case SDL_MOUSEBUTTONDOWN:
 				switch(e.button.button){
 					case SDL_BUTTON_LEFT:
-						Cam.breakBlock();
+						Cam.breakBlock(crash);
 						break;
 					case SDL_BUTTON_RIGHT:
-						Cam.createBlock();
+						Cam.createBlock(add);
 						break;
 					
 					default: break;
@@ -124,16 +164,18 @@ int main(int argc, char** argv) {
 				switch(e.key.keysym.sym)
 				{
 					case SDLK_a:
+					Mix_PlayChannel(1,pluck,0);
 					terrain.save(Cam.getPosition());
 					std::cout<<"Terrain saved"<<std::endl;
     					break;
 					case SDLK_l:
+					Mix_PlayChannel(1,pluck,0);
 					std::cout << "Nom du fichier a charger :" <<std::endl;
 					std::cin >> nom;
 					terrain.load(nom);
 					
 					std::cout<<"Terrain loaded"<<std::endl;
-					Cam.setPositionY(terrain.loadPositionCam(nom, 'y')+1); //Hauteur (positive)
+					Cam.setPositionY(terrain.loadPositionCam(nom, 'y')+2); //Hauteur (positive)
 					Cam.setPositionX(terrain.loadPositionCam(nom, 'x'));
 					Cam.setPositionZ(terrain.loadPositionCam(nom, 'z'));
 					std::cout<<"Camera loaded"<<std::endl;
@@ -152,10 +194,12 @@ int main(int argc, char** argv) {
         
     }
     
-    // Destruction des ressources OpenGL
-    
- 
-    
+    // Destruction des ressources
+    Mix_FreeChunk(crash);
+    crash = NULL;
+    Mix_CloseAudio();
+    Mix_Quit();
+   
     SDL_Quit();
     
     return EXIT_SUCCESS;

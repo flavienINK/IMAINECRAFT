@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include "imac2gl3/shapes/GLShapeInstance.hpp"
@@ -34,8 +35,8 @@ namespace imac2gl3 {
 			CubeTerre myCubeTerre;
 			CubeHerbe myCubeHerbe;
 			CubeEau myCubeEau;
-			/*CubeRoche myCubeRoche;
-			CubeNeige myCubeNeige;*/
+			CubeRoche myCubeRoche;
+			//CubeNeige myCubeNeige;
 			CubeBois myCubeBois;
 			CubeSkybox mySkybox;
 			TerrainData terrain;
@@ -53,14 +54,16 @@ namespace imac2gl3 {
 			void make(int height, int width, int x, int y, int sol, int id_Tex);			
 			void blockRemove(int height, int width, int x, int y, int sol);
 			
-			bool addBlock(int x, int y, int z);
-			bool deleteBlock(int x, int y, int z);
+			bool addBlock(int x, int y, int z, Mix_Chunk *);
+			bool deleteBlock(int x, int y, int z, Mix_Chunk *);
 						
 			bool blocDestructable(int i, int j, int k) const;			
 			bool hasFreeSurface(int i, int j, int k) const;
 			int getSolCoordonnee(glm::vec3 position) const;
 			int getNearestCollisionX(glm::vec3 position) const;
 			int getNearestCollisionY(glm::vec3 position) const;
+			
+			int getId(int x, int y, int z);
 	};
 }
 
