@@ -18,7 +18,7 @@ class CubeSkybox: public Cube {
 	public:
 		
 		CubeSkybox():Cube(1000){
-			SDL_Surface* tex1 = IMG_Load("img/herbe.png");
+			SDL_Surface* tex1 = IMG_Load("img/skybox.png");
 		
 			glGenTextures(1, &texture);
 			
