@@ -5,45 +5,48 @@ Open GL project by Timtothée Riom, Nicolas Giannuzzi, Corentin Marc, Arnaud Gic
 
 Fonctionnalités :
 
-    -Terrain de 1000x1000x30 blocs.
+    - Terrain de 1000x1000x30 blocs.
 
-    -Fonctionne en temps réel.
+    - Fonctionne en temps réel.
 
-    -Clipping pour le dessin du terrain. Dessin de 3600 cubes par frame (carré de 60x60 autour de la position du personnage).
+    - Clipping pour le dessin du terrain. 
+    Dessin de 3600 cubes par frame (carré de 60x60 autour de la position du personnage).
 
-    -Construction aléatoire du terrain avec une graine et morphologie répétée à plusieurs endroits aléatoirement.
+    - Construction aléatoire du terrain avec une graine et morphologie répétée 
+    à plusieurs endroits aléatoirement.
 
-    -Plusieurs types de cubes : avec des textures différentes, destructibles ou pas.
+    - Plusieurs types de cubes : avec des textures différentes, 
+    destructibles ou pas.
 
-    -Skybox.
+    - Skybox.
 
-    -Camera FreeFly.
+    - Camera FreeFly.
 
-    -Gestion des collisions dans les 3 directions.
+    - Gestion des collisions dans les 3 directions.
 
-    -Saut.
+    - Saut.
 
-    -Création/Destruction de cubes (s'ils sont destructibles).
+    - Création/Destruction de cubes (s'ils sont destructibles).
 
-    -Sauvegarde d'une partie.
+    - Sauvegarde d'une partie.
 
-    -Chargement d'une partie.
+    - Chargement d'une partie.
 
-    -Son d'ambiance et bruitages d'interactions ( bruits de pas, de création de cube ... )
+    - Son d'ambiance et bruitages d'interactions ( bruits de pas, de création de cube ... )
 
 
 Pour les contraintes techniques :
 
-    -Héritage pour les différents cubes.
+    - Héritage pour les différents cubes.
 
-    -Template pour la classe GLShapeInstance qui permet le dessin d'un objet quelconque.
+    - Template pour la classe GLShapeInstance qui permet le dessin d'un objet quelconque.
 
-    -Enumeration pour clarifier le code.
+    - Enumeration pour clarifier le code.
 
-    -RAII.
+    - RAII.
 
-    -Redéfinition d'opérateur pour la classe TerrainData.
+    - Redéfinition d'opérateur pour la classe TerrainData.
 
-    -Format XML pour les parties sauvegardées.
+    - Format XML pour les parties sauvegardées.
 
-    -Utilisation de la STL pour le stockage des données terrain dans un vector.
+    - Utilisation de la STL pour le stockage des données terrain dans un vector.
